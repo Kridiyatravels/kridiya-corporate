@@ -86,7 +86,7 @@ function renderChrome() {
         </nav>
         <div class="header-actions">
           <a class="btn btn-outline" href="portal.html">Sign In</a>
-          <a class="btn btn-primary" href="company.html#setup">Sign Up</a>
+          <a class="btn btn-primary" href="index.html#apply">Apply</a>
         </div>
       </div>`;
     const nav = header.querySelector(".main-nav");
