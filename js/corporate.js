@@ -210,8 +210,7 @@ function reference(prefix) {
 }
 
 async function sendToSupabase(form, ref) {
-  if (!window.supabase || !window.supabase.createClient) return;
-  const sb = window.supabase.createClient(KRIDIYA.supabaseUrl, KRIDIYA.supabaseKey);
+  const sb = await supabaseClient();
   const data = new FormData(form);
   const details = {};
   data.forEach((value, key) => {
@@ -259,7 +258,10 @@ function prepareForms() {
           sendFormSubmit(form, ref)
         ]);
         if (results.every((result) => result.status === "rejected")) throw results[0].reason;
-        if (status) status.innerHTML = `<div class="form-banner success">Request prepared with reference ${ref}. Kridiya will contact you from ${KRIDIYA.emails.corporate}.</div>`;
+        const message = form.dataset.successMessage
+          ? form.dataset.successMessage.replace("{ref}", ref)
+          : `Request prepared with reference ${ref}. Kridiya will contact you from ${KRIDIYA.emails.corporate}.`;
+        if (status) status.innerHTML = `<div class="form-banner success">${message}</div>`;
         form.reset();
       } catch (err) {
         if (status) status.innerHTML = `<div class="form-banner error">Could not save online. Please email ${KRIDIYA.emails.corporate} or WhatsApp ${KRIDIYA.phoneDisplay}.</div>`;
@@ -268,6 +270,36 @@ function prepareForms() {
       }
     });
   });
+}
+
+function initCounters() {
+  const counters = document.querySelectorAll("[data-count-to]");
+  if (!counters.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const animate = (el) => {
+    const target = Number(el.dataset.countTo);
+    if (!Number.isFinite(target)) return;
+    const start = performance.now();
+    const duration = 900;
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      el.textContent = String(Math.round(target * progress));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if (!("IntersectionObserver" in window)) {
+    counters.forEach(animate);
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animate(entry.target);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.45 });
+  counters.forEach((el) => io.observe(el));
 }
 
 async function supabaseClient() {
@@ -365,5 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
   prepareForms();
   prepareLogin();
   initReveal();
+  initCounters();
   loadSupabase();
 });
