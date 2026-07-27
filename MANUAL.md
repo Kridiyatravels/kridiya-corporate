@@ -15,7 +15,7 @@ It is branded as **Kridiya Business Travel** and includes:
 - Corporate portal sign-in/preview page
 - Contact page
 - Thank-you page
-- Shared corporate CSS with no orange color tokens
+- Shared corporate CSS mapped to the main Kridiya orange/gold/cream palette
 - Airport-style request/search UI
 - Supabase publishable-key connection pattern
 - FormSubmit email fallback to `corporate@kridiyatravel.com`

@@ -64,9 +64,9 @@ function renderChrome() {
           <ul>
             ${navLink("index.html", "Home", current)}
             <li class="nav-drop"><button type="button">Company</button><div class="drop-menu">
-              ${navLink("company.html", "Open Corporate Account", current)}
-              ${navLink("company.html#workflow", "Approval Workflow", current)}
-              ${navLink("company.html#billing", "Billing and LPO", current)}
+              ${dropLink("company.html", "Open Corporate Account")}
+              ${dropLink("company.html#workflow", "Approval Workflow")}
+              ${dropLink("company.html#billing", "Billing and LPO")}
               <a href="${KRIDIYA.mainSite}">Kridiya Main Site</a>
             </div></li>
             <li class="nav-drop"><button type="button">Services</button><div class="drop-menu">
@@ -142,6 +142,10 @@ function renderChrome() {
 
 function navLink(href, label, current) {
   return `<li><a href="${href}"${href === current ? ' aria-current="page"' : ""}>${label}</a></li>`;
+}
+
+function dropLink(href, label) {
+  return `<a href="${href}">${label}</a>`;
 }
 
 function renderServiceCards(targetSelector, limit) {

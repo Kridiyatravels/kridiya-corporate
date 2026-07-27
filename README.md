@@ -1,6 +1,6 @@
 # Kridiya Business Travel
 
-Static GitHub Pages-ready corporate travel site for `corporate.kridiyatravel.com`.
+Static GitHub Pages-ready corporate travel site for `corporate.kridiyatravel.com`, using the main Kridiya visual palette and corporate-specific airport-style controls.
 
 ## Purpose
 
