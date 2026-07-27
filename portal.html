@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corporate Portal | Kridiya Business Travel</title>
+<meta name="description" content="Corporate portal for Kridiya Business Travel company requests, quotes, bookings, payments, documents, receipts, and monthly statements.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32"><link rel="stylesheet" href="css/corporate.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+<main>
+  <section class="section">
+    <div class="container portal-layout">
+      <aside class="form-card">
+        <h1>Corporate portal sign in</h1>
+        <p class="muted">Username/password access for approved company contacts. Full data connection requires Supabase Auth URL and RLS setup before launch.</p>
+        <form class="form-grid" data-login-form>
+          <div class="field"><label>Email / username</label><input name="email" type="email" required placeholder="name@company.com"></div>
+          <div class="field"><label>Password</label><input name="password" type="password" required placeholder="Your password"></div>
+          <button class="btn btn-primary btn-lg" type="submit">Sign in</button>
+          <a class="btn btn-outline" href="company.html#setup">Request company access</a>
+          <div data-form-status></div>
+        </form>
+      </aside>
+      <section class="portal-shell">
+        <div class="portal-card">
+          <div class="portal-top">
+            <div><p class="brand-line">Portal preview</p><h2>What corporate users will see</h2></div>
+            <span class="status-chip">RLS protected phase</span>
+          </div>
+          <div class="portal-stats">
+            <div class="portal-stat"><span>8</span><b>Open requests</b></div>
+            <div class="portal-stat"><span>3</span><b>Quotes awaiting approval</b></div>
+            <div class="portal-stat"><span>5</span><b>Documents ready</b></div>
+            <div class="portal-stat"><span>1</span><b>Payment pending</b></div>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-card"><b>Requests and quotes</b><p>Company can track submitted requests, quote status, and approval needed.</p></div>
+          <div class="feature-card"><b>Bookings and documents</b><p>Tickets, visa notes, hotel vouchers, transfer confirmations, receipts, and statements.</p></div>
+          <div class="feature-card"><b>Payment status</b><p>Payment requested, proof received, verified, receipt issued, refund pending, or completed.</p></div>
+          <div class="feature-card"><b>Company-only access</b><p>Users see only their company data. Supplier costs and admin notes stay hidden.</p></div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+<footer id="site-footer" class="footer"></footer>
+<script src="js/corporate.js" defer></script>
+</body>
+</html>

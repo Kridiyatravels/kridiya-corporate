@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Corporate Travel | Kridiya Business Travel</title>
+<meta name="description" content="Submit corporate travel requests for flights, visas, UAE guest visas, hotels, transfers, insurance, MICE, VIP travel, Umrah groups, and company reward trips.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32"><link rel="stylesheet" href="css/corporate.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+<main>
+  <section class="section">
+    <div class="container split">
+      <div>
+        <p class="brand-line">Corporate request</p>
+        <h1>Send one precise request. Kridiya handles the quote, approval, payment, and documents.</h1>
+        <p class="lede">No live fare is promised here. Your request goes to Kridiya for supplier checking and company approval before booking.</p>
+      </div>
+      <div class="form-card">
+        <form class="form-grid" data-corporate-form data-prefix="BIZ">
+          <input type="hidden" name="Request_type" value="Corporate business travel request">
+          <div class="field-row">
+            <div class="field col-6"><label>Company name</label><input name="Company_name" required placeholder="Company name"></div>
+            <div class="field col-6"><label>Contact person</label><input name="Contact_person" required placeholder="Full name"></div>
+            <div class="field col-6"><label>Email</label><input name="Email" type="email" required placeholder="name@company.com"></div>
+            <div class="field col-6"><label>Phone / WhatsApp</label><input name="Phone" required placeholder="+971 ..."></div>
+            <div class="field col-6"><label>Service needed</label><select id="service-needed" name="Service_needed" required>
+              <option value="">Choose service</option><option>Employee flight booking</option><option>Business visa processing</option><option>UAE visit visa for company guests</option><option>Event/group travel</option><option>Airport transfers</option><option>Hotel corporate rates</option><option>Travel insurance</option><option>MICE travel</option><option>Staff annual leave travel packages</option><option>Executive/VIP travel support</option><option>Emergency travel changes</option><option>Corporate Umrah groups</option><option>Company holiday packages/reward trips</option><option>Monthly travel statement/reporting</option>
+            </select></div>
+            <div class="field col-6"><label>Travellers</label><input name="Travellers_count" placeholder="1, 4, 25..."></div>
+            <div class="field col-4"><label>From</label><input name="From" placeholder="DXB / Dubai / RAK"></div>
+            <div class="field col-4"><label>To / Destination</label><input name="Destination" required placeholder="BOM / London / Schengen / Makkah"></div>
+            <div class="field col-4"><label>Preferred date</label><input name="Preferred_date" type="date"></div>
+            <div class="field col-6"><label>Approval person</label><input name="Approval_person" placeholder="Manager / owner / HR / accounts"></div>
+            <div class="field col-6"><label>Payment method</label><select name="Payment_method"><option>Payment before booking</option><option>Bank transfer</option><option>Payment link</option><option>Cash</option><option>LPO/PO discussion</option></select></div>
+            <div class="field"><label>Traveller details / policy / notes</label><textarea name="Notes" placeholder="Traveller names, passport status, cabin class, budget, hotel grade, visa type, LPO/PO rule, urgency..."></textarea></div>
+          </div>
+          <button class="btn btn-primary btn-lg" type="submit">Send corporate request</button>
+          <p class="form-note">Kridiya will quote first. Booking starts after approval and payment confirmation.</p>
+          <div data-form-status></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+<footer id="site-footer" class="footer"></footer>
+<script src="js/corporate.js" defer></script>
+</body>
+</html>

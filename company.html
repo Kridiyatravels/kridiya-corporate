@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Company Account Setup | Kridiya Business Travel</title>
+<meta name="description" content="Open a Kridiya Business Travel corporate account with company profile, billing contact, approval workflow, LPO/PO rules, and travel policy notes.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32"><link rel="stylesheet" href="css/corporate.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+<main>
+  <section class="section">
+    <div class="container split">
+      <div>
+        <p class="brand-line">Company account</p>
+        <h1>Set up your company travel profile before the first urgent trip.</h1>
+        <p class="lede">Kridiya captures the contacts, billing path, LPO/PO rules, policy notes, and approval process your team needs before staff start travelling.</p>
+      </div>
+      <div class="ops-card">
+        <h2>Company readiness</h2>
+        <div class="flight-board">
+          <div class="board-row"><b class="airport-code">CO</b><span>Company legal/trade name and address</span><em class="status-chip">Profile</em></div>
+          <div class="board-row"><b class="airport-code">AP</b><span>Authorized requester and approver</span><em class="status-chip">Control</em></div>
+          <div class="board-row"><b class="airport-code">AR</b><span>Accounts/billing email and payment preference</span><em class="status-chip">Billing</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section-tight" id="setup">
+    <div class="container split">
+      <div>
+        <h2>Open corporate account</h2>
+        <p>Use `corporate@kridiyatravel.com` for company requests. The form also prepares the same fields needed later for admin corporate accounts.</p>
+      </div>
+      <div class="form-card">
+        <form class="form-grid" data-corporate-form data-prefix="COA">
+          <input type="hidden" name="Request_type" value="Corporate account setup">
+          <div class="field-row">
+            <div class="field col-6"><label>Company name</label><input name="Company_name" required placeholder="Legal or trade name"></div>
+            <div class="field col-6"><label>Company email</label><input name="Company_email" type="email" required placeholder="name@company.com"></div>
+            <div class="field col-6"><label>Authorized contact</label><input name="Authorized_contact" required placeholder="Full name"></div>
+            <div class="field col-6"><label>Phone / WhatsApp</label><input name="Phone" required placeholder="+971 ..."></div>
+            <div class="field col-6"><label>Billing email</label><input name="Billing_email" type="email" placeholder="accounts@company.com"></div>
+            <div class="field col-6"><label>LPO / PO required?</label><select name="LPO_required"><option>Not sure</option><option>Yes</option><option>No</option></select></div>
+            <div class="field"><label>Travel policy / approval notes</label><textarea name="Travel_policy" placeholder="Approver, budget limits, cabin rules, hotel grade, preferred airlines, payment process..."></textarea></div>
+          </div>
+          <button class="btn btn-primary btn-lg" type="submit">Submit company profile</button>
+          <div data-form-status></div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="section band" id="teams">
+    <div class="container">
+      <h2>Designed for every team involved in travel</h2>
+      <div class="team-grid">
+        <div class="team-card"><b>Business owners</b><p>Visibility, fast support, no booking before approval/payment.</p></div>
+        <div class="team-card"><b>HR teams</b><p>Employee movement, annual leave travel, passport/document follow-up.</p></div>
+        <div class="team-card"><b>Travel coordinators</b><p>One reference, one desk, request history, and service status.</p></div>
+        <div class="team-card"><b>Finance teams</b><p>Billing email, payment proof, receipts, monthly statements, and backup-ready records.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="workflow">
+    <div class="container">
+      <h2>Approval workflow</h2>
+      <div class="workflow">
+        <div><b>Company request</b><span>Route, service, traveller and policy details.</span></div>
+        <div><b>Supplier quote</b><span>Staff checks availability and pricing.</span></div>
+        <div><b>Company approval</b><span>Approver confirms option and LPO/PO needs.</span></div>
+        <div><b>Payment</b><span>Bank transfer, link, or cash before booking.</span></div>
+        <div><b>Booking</b><span>Ticket, visa, hotel, transfer, or package confirmed.</span></div>
+        <div><b>Statement</b><span>Receipt and monthly report prepared.</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer id="site-footer" class="footer"></footer>
+<script src="js/corporate.js" defer></script>
+</body>
+</html>
