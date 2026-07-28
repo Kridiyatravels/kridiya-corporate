@@ -1110,6 +1110,7 @@ window.KridiyaAuth = (function () {
         const activeCompany = companies[0];
         const bookings = await KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id);
         renderCorporatePortal(companies, bookings, activeCompany);
+        initCorporatePortalTabs();
         const sidebarCompany = document.getElementById("corp-sidebar-company");
         const sidebarRole = document.getElementById("corp-sidebar-role");
         const portalStatus = document.getElementById("corp-portal-status");
@@ -1139,10 +1140,27 @@ window.KridiyaAuth = (function () {
   function renderCorporatePortal(companies, bookings, activeCompany) {
     const companyList = document.getElementById("corp-company-list");
     const bookingList = document.getElementById("corp-booking-list");
+    const openCount = bookings.filter(function (booking) {
+      return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
+    }).length;
     document.getElementById("corp-visible-items").textContent = String(bookings.length);
     document.getElementById("corp-company-count").textContent = String(companies.length);
     document.getElementById("corp-company-name").textContent = activeCompany.company_name || "Approved company";
     document.getElementById("corp-member-role").textContent = KridiyaAuth.statusLabel(activeCompany.member_role || "Member");
+    const openEl = document.getElementById("corp-open-count");
+    if (openEl) openEl.textContent = String(openCount);
+    const financeNote = document.getElementById("corp-finance-note");
+    if (financeNote) {
+      financeNote.textContent = activeCompany.can_view_finance
+        ? "Your login can view company finance fields released to the portal."
+        : "Finance is hidden for this login. Kridiya can enable finance access for approved accounts users.";
+    }
+    const next = document.getElementById("corp-next-action");
+    if (next) {
+      next.innerHTML = openCount
+        ? '<b>' + KridiyaAuth.escapeHTML(String(openCount)) + ' active item(s)</b><p>Review booking status, documents, payment status, and any pending details requested by Kridiya.</p>'
+        : '<b>Ready for requests</b><p>Submit the trip requirement once. Kridiya will quote, confirm, document, and report through admin.</p>';
+    }
     document.getElementById("corp-access-copy").textContent =
       (activeCompany.company_name || "Your company") + " is linked to this login. You can see portal-safe company booking status and create new requests.";
 
@@ -1174,6 +1192,36 @@ window.KridiyaAuth = (function () {
         '<footer><small>Payment: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "not_requested")) + '</small><small>Docs: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.document_status || "not_started")) + '</small>' + amount + '</footer>' +
       '</article>';
     }).join("");
+  }
+
+  function initCorporatePortalTabs() {
+    const buttons = Array.from(document.querySelectorAll("[data-portal-tab]"));
+    const panels = Array.from(document.querySelectorAll("[data-portal-panel]"));
+    if (!buttons.length || !panels.length) return;
+
+    function openTab(name) {
+      buttons.forEach(function (button) {
+        button.classList.toggle("active", button.dataset.portalTab === name);
+      });
+      panels.forEach(function (panel) {
+        panel.classList.toggle("active", panel.dataset.portalPanel === name);
+      });
+      const title = document.getElementById("corp-workspace-title");
+      const active = buttons.find(function (button) { return button.dataset.portalTab === name; });
+      if (title && active) title.textContent = active.textContent.trim();
+    }
+
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        openTab(button.dataset.portalTab);
+      });
+    });
+
+    document.querySelectorAll("[data-portal-tab-open]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        openTab(button.dataset.portalTabOpen);
+      });
+    });
   }
 
   function initCorporatePortalRequest(activeCompany, refresh) {
