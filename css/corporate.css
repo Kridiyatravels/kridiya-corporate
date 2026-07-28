@@ -32,12 +32,25 @@
   --grad-mild: linear-gradient(135deg, #fff6e8, #ffe9cc);
   --grad-dark: linear-gradient(135deg, #ffeccb, #ffdfa6 52%, #f8cd78);
   --grad-wa: linear-gradient(115deg, #19a45f, #27d76f);
-  --photo-lounge: url("../assets/illus-corporate-desk.svg");
-  --photo-meeting: url("../assets/illus-mice-groups.svg");
-  --photo-dubai: url("../assets/illus-business-visa.svg");
-  --photo-aircraft: url("../assets/illus-hotel-transfer.svg");
-  --illus-vip: url("../assets/illus-vip-support.svg");
-  --illus-report: url("../assets/illus-reporting.svg");
+  --illus-corporate-desk: url("../assets/illustrations/corporate-desk.png");
+  --illus-employee-flight: url("../assets/illustrations/employee-flight.png");
+  --illus-business-visa: url("../assets/illustrations/business-visa.png");
+  --illus-guest-visa: url("../assets/illustrations/uae-guest-visa.png");
+  --illus-airport-transfer: url("../assets/illustrations/airport-transfers.png");
+  --illus-hotel: url("../assets/illustrations/hotel-rates.png");
+  --illus-insurance: url("../assets/illustrations/travel-insurance.png");
+  --illus-event: url("../assets/illustrations/event-group-travel.png");
+  --illus-mice: url("../assets/illustrations/mice-travel.png");
+  --illus-annual: url("../assets/illustrations/annual-leave.png");
+  --illus-vip: url("../assets/illustrations/vip-support.png");
+  --illus-emergency: url("../assets/illustrations/emergency-changes.png");
+  --illus-umrah: url("../assets/illustrations/umrah-groups.png");
+  --illus-reward: url("../assets/illustrations/reward-trips.png");
+  --illus-report: url("../assets/illustrations/monthly-reporting.png");
+  --photo-lounge: var(--illus-corporate-desk);
+  --photo-meeting: var(--illus-mice);
+  --photo-dubai: var(--illus-business-visa);
+  --photo-aircraft: var(--illus-airport-transfer);
   --shadow: 0 1px 2px rgb(120 82 20 / 0.06), 0 12px 24px -16px rgb(120 82 20 / 0.18);
   --shadow-pop: 0 2px 6px rgb(120 82 20 / 0.09), 0 20px 38px -20px rgb(120 82 20 / 0.24);
   --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -366,16 +379,19 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
   color: #fff;
   text-decoration: none;
 }
-.image-flight { --image: var(--photo-lounge); background-position: center; }
-.image-visa { --image: var(--photo-dubai); background-position: center; }
-.image-guest { --image: var(--photo-dubai); background-position: center; }
-.image-hotel { --image: var(--photo-aircraft); background-position: center; }
-.image-transfer { --image: var(--photo-aircraft); background-position: center; }
-.image-insurance { --image: var(--photo-lounge); background-position: center; }
-.image-mice { --image: var(--photo-meeting); background-position: center; }
+.image-flight { --image: var(--illus-employee-flight); background-position: center; }
+.image-visa { --image: var(--illus-business-visa); background-position: center; }
+.image-guest { --image: var(--illus-guest-visa); background-position: center; }
+.image-hotel { --image: var(--illus-hotel); background-position: center; }
+.image-transfer { --image: var(--illus-airport-transfer); background-position: center; }
+.image-insurance { --image: var(--illus-insurance); background-position: center; }
+.image-event { --image: var(--illus-event); background-position: center; }
+.image-mice { --image: var(--illus-mice); background-position: center; }
+.image-annual { --image: var(--illus-annual); background-position: center; }
 .image-vip { --image: var(--illus-vip); background-position: center; }
-.image-umrah { --image: var(--photo-meeting); background-position: center; }
-.image-reward { --image: var(--photo-dubai); background-position: center; }
+.image-emergency { --image: var(--illus-emergency); background-position: center; }
+.image-umrah { --image: var(--illus-umrah); background-position: center; }
+.image-reward { --image: var(--illus-reward); background-position: center; }
 .image-report { --image: var(--illus-report); background-position: center; }
 .application-layout {
   display: grid;
