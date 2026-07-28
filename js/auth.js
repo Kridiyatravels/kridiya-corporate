@@ -506,6 +506,23 @@ window.KridiyaAuth = (function () {
     el.className = "form-banner " + (kind || "error");
   }
 
+  function toast(msg) {
+    if (!msg) return;
+    let el = document.querySelector(".site-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.className = "site-toast";
+      el.setAttribute("role", "status");
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(function () {
+      el.classList.remove("show");
+    }, 3200);
+  }
+
   function readableErrorValue(value, depth) {
     if (!value || depth > 2) return "";
     if (typeof value === "string") return value.trim();
