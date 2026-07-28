@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Executive VIP travel support character">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#ffe2aa"/></linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6c445"/><stop offset=".56" stop-color="#f2820c"/><stop offset="1" stop-color="#b6530f"/></linearGradient>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="17" stdDeviation="17" flood-color="#8d3f0b" flood-opacity=".15"/></filter>
+  </defs>
+  <rect width="900" height="620" rx="28" fill="url(#bg)"/>
+  <path d="M96 470c101-55 167-23 264-32 126-12 176-89 308-67 63 11 107 41 142 78v86H96z" fill="#fff" opacity=".68"/>
+  <g transform="translate(318 78)" filter="url(#s)">
+    <path d="M132 62c14-42 83-48 116-17 35 33 26 90-12 119-47 36-124 13-104-102z" fill="#2f2b28"/>
+    <circle cx="188" cy="108" r="58" fill="#eda06d"/>
+    <path d="M132 88c52 14 96-5 132-45 14 51-5 96-49 114-39 16-76-6-83-69z" fill="#2f2b28"/>
+    <path d="M118 194c41 30 99 30 140 0l96 58v210H28V252z" fill="#3a2c16"/>
+    <path d="M154 214h70l-35 98z" fill="#fff"/>
+    <path d="M188 314l31 148h-62z" fill="url(#brand)"/>
+  </g>
+  <g transform="translate(116 332)" filter="url(#s)">
+    <rect width="162" height="156" rx="24" fill="#fff"/>
+    <path d="M52 0v-34c0-32 58-32 58 0V0" fill="none" stroke="#b6530f" stroke-width="14" stroke-linecap="round"/>
+    <rect x="34" y="46" width="94" height="48" rx="12" fill="url(#brand)"/>
+    <path d="M52 126h58" stroke="#e8d8bf" stroke-width="11" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(604 132)" filter="url(#s)">
+    <rect width="196" height="98" rx="22" fill="#fff"/>
+    <path d="M38 56h112M38 32h70" stroke="#e8d8bf" stroke-width="12" stroke-linecap="round"/>
+    <path d="M148 30l16 16 30-34" fill="none" stroke="#f2820c" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

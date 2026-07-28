@@ -36,6 +36,8 @@
   --photo-meeting: url("../assets/illus-mice-groups.svg");
   --photo-dubai: url("../assets/illus-business-visa.svg");
   --photo-aircraft: url("../assets/illus-hotel-transfer.svg");
+  --illus-vip: url("../assets/illus-vip-support.svg");
+  --illus-report: url("../assets/illus-reporting.svg");
   --shadow: 0 1px 2px rgb(120 82 20 / 0.06), 0 12px 24px -16px rgb(120 82 20 / 0.18);
   --shadow-pop: 0 2px 6px rgb(120 82 20 / 0.09), 0 20px 38px -20px rgb(120 82 20 / 0.24);
   --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -371,10 +373,10 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
 .image-transfer { --image: var(--photo-aircraft); background-position: center; }
 .image-insurance { --image: var(--photo-lounge); background-position: center; }
 .image-mice { --image: var(--photo-meeting); background-position: center; }
-.image-vip { --image: var(--photo-lounge); background-position: center; }
+.image-vip { --image: var(--illus-vip); background-position: center; }
 .image-umrah { --image: var(--photo-meeting); background-position: center; }
 .image-reward { --image: var(--photo-dubai); background-position: center; }
-.image-report { --image: var(--photo-meeting); background-position: center; }
+.image-report { --image: var(--illus-report); background-position: center; }
 .application-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.78fr) minmax(360px, 1fr);
