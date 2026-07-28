@@ -32,6 +32,10 @@
   --grad-mild: linear-gradient(135deg, #fff6e8, #ffe9cc);
   --grad-dark: linear-gradient(135deg, #ffeccb, #ffdfa6 52%, #f8cd78);
   --grad-wa: linear-gradient(115deg, #19a45f, #27d76f);
+  --photo-lounge: url("https://source.unsplash.com/aSJxeQAMDpA/1800x1100");
+  --photo-meeting: url("https://source.unsplash.com/ordRm3twjOg/1600x1000");
+  --photo-dubai: url("https://source.unsplash.com/ZEI5I_lVtQA/1600x1100");
+  --photo-aircraft: url("https://source.unsplash.com/72SIp7T8AHE/1600x1000");
   --shadow: 0 1px 2px rgb(120 82 20 / 0.06), 0 12px 24px -16px rgb(120 82 20 / 0.18);
   --shadow-pop: 0 2px 6px rgb(120 82 20 / 0.09), 0 20px 38px -20px rgb(120 82 20 / 0.24);
   --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -141,7 +145,7 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
   padding: clamp(2.6rem, 7vw, 6rem) 0 2rem;
   background:
     linear-gradient(90deg, rgb(255 255 255 / 0.96), rgb(255 250 241 / 0.88) 48%, rgb(255 244 230 / 0.70)),
-    url("../assets/hero.jpg") center / cover no-repeat;
+    var(--photo-lounge) center / cover no-repeat;
   border-bottom: 1px solid var(--line);
 }
 .marketing-hero,
@@ -163,7 +167,7 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
   inset: 0;
   background:
     linear-gradient(90deg, rgb(255 255 255 / 0.98) 0%, rgb(255 255 255 / 0.90) 42%, rgb(255 244 230 / 0.62) 74%),
-    url("../assets/hero.jpg") center / cover no-repeat;
+    var(--photo-dubai) center / cover no-repeat;
   transform: scale(1.04);
 }
 .marketing-hero::after,
@@ -322,11 +326,12 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
   font-weight: 900;
 }
 .service-image {
+  --image: var(--photo-lounge);
   min-height: 250px;
   border-radius: var(--r-sm);
   background:
     linear-gradient(135deg, rgb(242 130 12 / 0.22), rgb(246 196 69 / 0.18)),
-    url("../assets/hero.jpg") center / cover no-repeat;
+    var(--image) center / cover no-repeat;
   border: 1px solid var(--line);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.38);
 }
@@ -356,17 +361,17 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
   color: #fff;
   text-decoration: none;
 }
-.image-flight { background-position: 46% 44%; }
-.image-visa { background-position: 58% 42%; }
-.image-guest { background-position: 68% 50%; }
-.image-hotel { background-position: 52% 62%; }
-.image-transfer { background-position: 38% 52%; }
-.image-insurance { background-position: 65% 58%; }
-.image-mice { background-position: 72% 44%; }
-.image-vip { background-position: 45% 35%; }
-.image-umrah { background-position: 54% 50%; }
-.image-reward { background-position: 60% 64%; }
-.image-report { background-position: 40% 60%; }
+.image-flight { --image: var(--photo-aircraft); background-position: 46% 44%; }
+.image-visa { --image: var(--photo-dubai); background-position: 58% 42%; }
+.image-guest { --image: var(--photo-dubai); background-position: 68% 50%; }
+.image-hotel { --image: var(--photo-meeting); background-position: 52% 62%; }
+.image-transfer { --image: var(--photo-lounge); background-position: 38% 52%; }
+.image-insurance { --image: var(--photo-lounge); background-position: 65% 58%; }
+.image-mice { --image: var(--photo-meeting); background-position: 72% 44%; }
+.image-vip { --image: var(--photo-lounge); background-position: 45% 35%; }
+.image-umrah { --image: var(--photo-aircraft); background-position: 54% 50%; }
+.image-reward { --image: var(--photo-dubai); background-position: 60% 64%; }
+.image-report { --image: var(--photo-meeting); background-position: 40% 60%; }
 .application-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.78fr) minmax(360px, 1fr);
@@ -465,7 +470,7 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
   z-index: -2;
   background:
     linear-gradient(90deg, rgb(255 255 255 / 0.98) 0%, rgb(255 255 255 / 0.92) 43%, rgb(255 244 230 / 0.58) 76%),
-    url("../assets/hero.jpg") center / cover no-repeat;
+    var(--photo-lounge) center / cover no-repeat;
   transform: scale(1.03);
 }
 .corp-hero-grid {
@@ -964,7 +969,7 @@ p { margin: 0 0 1em; max-width: 72ch; text-wrap: pretty; }
 .final-cta .hero-photo {
   background:
     linear-gradient(90deg, rgb(255 255 255 / 0.96), rgb(255 244 230 / 0.78), rgb(255 255 255 / 0.62)),
-    url("../assets/hero.jpg") center / cover no-repeat;
+    var(--photo-dubai) center / cover no-repeat;
 }
 .final-cta-inner {
   position: relative;
