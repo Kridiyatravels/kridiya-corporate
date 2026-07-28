@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corporate Portal Sign In | Kridiya Business Travel</title>
+<meta name="description" content="Sign in to the Kridiya Business Travel corporate portal for company requests, bookings, documents, and monthly reporting.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/favicon-180.png">
+<link rel="canonical" href="https://corporate.kridiyatravel.com/login.html">
+<link rel="stylesheet" href="css/corporate.css">
+<link rel="stylesheet" href="css/corporate-portal.css">
+</head>
+<body data-page="login">
+<header id="site-header" class="site-header"></header>
+<main>
+  <div class="container auth-wrap">
+    <div class="auth-shell">
+      <section class="auth-card">
+        <h1>Corporate portal sign in</h1>
+        <p class="auth-sub">Approved company contacts can access company requests, booking status, documents, and billing coordination.</p>
+        <form id="login-form" class="form-grid" novalidate>
+          <div class="form-banner error" hidden role="alert"></div>
+          <div class="field">
+            <label for="lg-email">EMAIL</label>
+            <input id="lg-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="lg-pass">PASSWORD</label>
+            <div class="pw-wrap">
+              <input id="lg-pass" name="password" type="password" autocomplete="current-password" required placeholder="Your password">
+              <button type="button" class="pw-toggle" aria-label="Show password">SHOW</button>
+            </div>
+          </div>
+          <div class="auth-form-row">
+            <label class="checkbox-row"><input type="checkbox" name="remember" checked disabled> Keep me signed in</label>
+            <a href="contact.html">Need help?</a>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" type="submit" data-label="Log in">Log in</button>
+        </form>
+        <p class="auth-alt">Need company access? <a href="index.html#apply"><b>Apply for corporate account</b></a></p>
+      </section>
+
+      <aside class="auth-assist">
+        <h2>Portal access</h2>
+        <ul class="auth-checklist">
+          <li><b>Company-only data</b><span>Your login is linked to one approved corporate account.</span></li>
+          <li><b>Booking visibility</b><span>Track company requests, booking status, documents, and finance permissions.</span></li>
+          <li><b>Controlled access</b><span>Kridiya issues and links usernames/passwords only after approval.</span></li>
+        </ul>
+        <a class="btn btn-outline btn-block" href="https://wa.me/971509413873?text=Hello%20Kridiya%20Business%20Travel%2C%20I%20need%20corporate%20portal%20login%20support." target="_blank" rel="noopener">Need help? WhatsApp us</a>
+      </aside>
+    </div>
+  </div>
+</main>
+<footer id="site-footer" class="footer"></footer>
+<script src="js/corporate.js" defer></script>
+<script src="js/auth.js" defer></script>
+</body>
+</html>
+
