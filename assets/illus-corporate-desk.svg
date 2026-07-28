@@ -1,34 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Corporate travel manager with laptop and route approvals">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 520" role="img" aria-label="Polished corporate travel manager illustration">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#ffe2aa"/></linearGradient>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8c84b"/><stop offset=".55" stop-color="#f2820c"/><stop offset="1" stop-color="#b6530f"/></linearGradient>
-    <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#8d3f0b" flood-opacity=".16"/></filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#ffe3ac"/></linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7bd3f"/><stop offset="1" stop-color="#f2820c"/></linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff5df"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#8d3f0b" flood-opacity=".14"/></filter>
   </defs>
-  <rect width="900" height="620" rx="28" fill="url(#bg)"/>
-  <path d="M102 446c116-72 196-6 312-55 107-45 146-136 269-122 63 7 112 39 154 78v177H102z" fill="#fff" opacity=".65"/>
-  <path d="M92 178c126-62 219-4 323-31 100-26 164-109 301-57" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity=".72"/>
-  <g transform="translate(144 118)" filter="url(#s)">
-    <path d="M238 53c15-39 81-45 112-13 30 31 22 84-14 111-44 33-117 13-98-98z" fill="#2e2a27"/>
-    <circle cx="290" cy="96" r="52" fill="#ee9b67"/>
-    <path d="M236 73c48 14 88-3 120-41 13 47-4 89-45 106-35 15-69-6-75-65z" fill="#2e2a27"/>
-    <path d="M223 173c37 31 89 31 126 0l97 53-42 172H168l-42-172z" fill="url(#brand)"/>
-    <path d="M149 230l-73 61c-20 17-23 47-6 67 17 19 47 21 66 2l57-58z" fill="#df814c"/>
-    <path d="M424 230l73 61c20 17 23 47 6 67-17 19-47 21-66 2l-57-58z" fill="#d8753d"/>
-    <rect x="148" y="295" width="278" height="132" rx="18" fill="#4b505a"/>
-    <rect x="171" y="316" width="232" height="78" rx="9" fill="#f8f9fb"/>
-    <path d="M150 427h274l-34 42H184z" fill="#323842"/>
-    <circle cx="288" cy="354" r="21" fill="#f2820c" opacity=".22"/>
+  <rect width="820" height="520" rx="24" fill="url(#bg)"/>
+  <path d="M82 166c96-44 173-1 264-24 98-25 158-98 294-54" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" opacity=".85"/>
+  <path d="M86 190c96-44 173-1 264-24 98-25 158-98 294-54" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".62"/>
+  <circle cx="112" cy="114" r="7" fill="#f6c445"/><circle cx="690" cy="160" r="9" fill="#f2820c"/><circle cx="704" cy="350" r="6" fill="#b6530f"/>
+  <g filter="url(#shadow)">
+    <rect x="534" y="80" width="158" height="86" rx="18" fill="url(#card)"/>
+    <path d="M562 110h72M562 134h96" stroke="#e6d2b1" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="652" cy="118" r="20" fill="#f2820c"/>
+    <path d="M643 118l7 7 15-19" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <g transform="translate(574 76)" filter="url(#s)">
-    <rect width="220" height="132" rx="22" fill="#fff"/>
-    <path d="M36 46h122M36 76h84M36 106h136" stroke="#e8d8bf" stroke-width="11" stroke-linecap="round"/>
-    <circle cx="178" cy="72" r="28" fill="url(#brand)"/>
-    <path d="M165 73l10 10 20-24" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="translate(232 88)" filter="url(#shadow)">
+    <path d="M172 68c4-42 38-64 78-52 43 13 54 66 25 101-33 40-99 27-103-49z" fill="#2d2b2b"/>
+    <circle cx="224" cy="92" r="48" fill="#ee9c68"/>
+    <path d="M176 70c46 14 83-4 111-35 10 43-10 79-45 92-31 12-61-7-66-57z" fill="#2d2b2b"/>
+    <path d="M190 128c18 16 49 16 68 0-2 27-14 43-34 43s-32-16-34-43z" fill="#f4b07e"/>
+    <path d="M167 178c31 25 84 25 115 0l76 42c34 18 49 57 34 92l-37 88H94l-37-88c-15-35 0-74 34-92z" fill="url(#shirt)"/>
+    <path d="M126 238l-66 58c-13 12-13 33 0 45 13 12 34 11 46-3l55-63z" fill="#e1844e"/>
+    <path d="M324 238l66 58c13 12 13 33 0 45-13 12-34 11-46-3l-55-63z" fill="#d97844"/>
+    <path d="M114 303c32 34 66 51 109 51 44 0 83-19 113-51l44 76H70z" fill="#2f5660"/>
+    <rect x="98" y="256" width="254" height="120" rx="18" fill="#59606b"/>
+    <rect x="120" y="278" width="210" height="72" rx="9" fill="#f8f9fb"/>
+    <circle cx="225" cy="314" r="18" fill="#f2820c" opacity=".18"/>
+    <path d="M98 376h254l-32 36H130z" fill="#373c46"/>
   </g>
-  <g transform="translate(96 416)" filter="url(#s)">
-    <rect width="176" height="88" rx="22" fill="#fff"/>
-    <path d="M34 54h106M34 32h68" stroke="#e8d8bf" stroke-width="12" stroke-linecap="round"/>
-    <path d="M122 30l26 22-26 22" fill="none" stroke="#f2820c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g filter="url(#shadow)">
+    <rect x="92" y="364" width="134" height="66" rx="16" fill="#fff"/>
+    <path d="M122 398h68M122 377h42" stroke="#e6d2b1" stroke-width="9" stroke-linecap="round"/>
+    <path d="M186 376l22 22-22 22" fill="none" stroke="#f2820c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <circle cx="748" cy="412" r="10" fill="#f6c445"/><circle cx="788" cy="382" r="7" fill="#b6530f"/><circle cx="102" cy="96" r="9" fill="#f6c445"/>
 </svg>

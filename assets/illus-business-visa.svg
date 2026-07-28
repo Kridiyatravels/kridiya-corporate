@@ -1,27 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Visa coordinator with passport and approval documents">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 520" role="img" aria-label="Polished visa coordinator illustration">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff9ee"/><stop offset="1" stop-color="#ffe1a8"/></linearGradient>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6c445"/><stop offset=".56" stop-color="#f2820c"/><stop offset="1" stop-color="#b6530f"/></linearGradient>
-    <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#8d3f0b" flood-opacity=".15"/></filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#ffe3ac"/></linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8c84b"/><stop offset="1" stop-color="#f2820c"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#8d3f0b" flood-opacity=".14"/></filter>
   </defs>
-  <rect width="900" height="620" rx="28" fill="url(#bg)"/>
-  <circle cx="740" cy="132" r="64" fill="#fff" opacity=".68"/><circle cx="142" cy="474" r="82" fill="#fff" opacity=".7"/>
-  <g transform="translate(144 102)" filter="url(#s)">
-    <rect width="318" height="418" rx="28" fill="#fff"/>
-    <rect x="38" y="42" width="116" height="94" rx="18" fill="#fff1d9"/>
-    <circle cx="96" cy="74" r="23" fill="#ee9b67"/><path d="M58 122c12-31 65-31 76 0" fill="#b6530f" opacity=".72"/>
-    <path d="M188 58h72M188 88h50M42 174h220M42 216h180M42 258h220M42 300h142" stroke="#e8d8bf" stroke-width="13" stroke-linecap="round"/>
-    <rect x="42" y="342" width="226" height="44" rx="13" fill="url(#brand)"/>
+  <rect width="820" height="520" rx="24" fill="url(#bg)"/>
+  <path d="M90 170c105-54 190 4 292-28 93-29 156-92 296-46" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" opacity=".82"/>
+  <circle cx="692" cy="136" r="44" fill="#fff" opacity=".76"/><circle cx="126" cy="398" r="62" fill="#fff" opacity=".68"/>
+  <g transform="translate(112 88)" filter="url(#shadow)">
+    <rect width="238" height="322" rx="24" fill="#fff"/>
+    <rect x="34" y="34" width="84" height="76" rx="16" fill="#fff0d6"/>
+    <circle cx="76" cy="62" r="20" fill="#ee9c68"/>
+    <path d="M45 100c10-27 52-27 62 0" fill="#b6530f" opacity=".74"/>
+    <path d="M144 48h54M144 76h38M34 144h164M34 184h132M34 224h164M34 264h100" stroke="#e6d2b1" stroke-width="11" stroke-linecap="round"/>
   </g>
-  <g transform="translate(478 126)" filter="url(#s)">
-    <path d="M112 84c-8-49 32-86 85-80 43 5 69 38 64 83-6 56-58 84-149-3z" fill="#2f2b28"/>
-    <circle cx="187" cy="98" r="55" fill="#eda06d"/>
-    <path d="M121 83c50 13 90-5 128-43 13 49-6 91-48 109-35 15-70-5-80-66z" fill="#2f2b28"/>
-    <path d="M120 180c38 28 90 28 128 0l85 52v190H36V232z" fill="url(#brand)"/>
-    <rect x="74" y="246" width="222" height="138" rx="18" fill="#fff"/>
-    <path d="M108 296h76M108 330h120M108 364h154" stroke="#e8d8bf" stroke-width="12" stroke-linecap="round"/>
-    <circle cx="252" cy="300" r="30" fill="#f6c445"/>
-    <path d="M238 300h28M252 286v28" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+  <g transform="translate(405 106)" filter="url(#shadow)">
+    <path d="M98 58c8-38 43-56 82-42 40 14 49 66 20 98-34 38-96 22-102-56z" fill="#2d2b2b"/>
+    <circle cx="148" cy="86" r="48" fill="#ee9c68"/>
+    <path d="M100 66c44 13 82-6 108-35 10 43-10 80-46 94-31 12-57-9-62-59z" fill="#2d2b2b"/>
+    <path d="M108 168c31 22 70 22 101 0l70 43v158H40V211z" fill="url(#shirt)"/>
+    <rect x="78" y="226" width="164" height="106" rx="16" fill="#fff"/>
+    <path d="M106 270h54M106 300h92" stroke="#e6d2b1" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="214" cy="272" r="24" fill="#f6c445"/>
+    <path d="M203 272h22M214 261v22" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
   </g>
-  <path d="M558 480c74 31 148 31 226-4" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity=".72"/>
 </svg>
