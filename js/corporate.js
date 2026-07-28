@@ -47,6 +47,7 @@ function pageName() {
 }
 
 function renderChrome() {
+  if (document.body.dataset.privatePortal === "true") return;
   const current = pageName();
   const header = document.getElementById("site-header");
   if (header) {

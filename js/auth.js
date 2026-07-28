@@ -1110,6 +1110,12 @@ window.KridiyaAuth = (function () {
         const activeCompany = companies[0];
         const bookings = await KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id);
         renderCorporatePortal(companies, bookings, activeCompany);
+        const sidebarCompany = document.getElementById("corp-sidebar-company");
+        const sidebarRole = document.getElementById("corp-sidebar-role");
+        const portalStatus = document.getElementById("corp-portal-status");
+        if (sidebarCompany) sidebarCompany.textContent = activeCompany.company_name || "Approved company";
+        if (sidebarRole) sidebarRole.textContent = KridiyaAuth.statusLabel(activeCompany.member_role || "Member");
+        if (portalStatus) portalStatus.textContent = "Active";
         initCorporatePortalRequest(activeCompany, function () {
           return KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id).then(function (fresh) {
             renderCorporatePortal(companies, fresh, activeCompany);
@@ -1119,6 +1125,13 @@ window.KridiyaAuth = (function () {
         app.hidden = false;
       } catch (err) {
         gate.innerHTML = '<div class="form-banner error" role="alert">Could not load corporate portal yet: ' + KridiyaAuth.escapeHTML(errorMessage(err, "Please refresh and try again.")) + "</div>";
+      }
+      const logout = document.getElementById("corp-logout-btn");
+      if (logout) {
+        logout.addEventListener("click", async function () {
+          await KridiyaAuth.logout();
+          location.href = "login.html?next=corporate-account.html";
+        });
       }
     });
   }

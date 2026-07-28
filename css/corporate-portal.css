@@ -1,4 +1,163 @@
 /* Kridiya corporate client portal - live Supabase dashboard styles. */
+body[data-private-portal="true"] {
+  min-height: 100vh;
+  background: #f7f2ea;
+}
+
+.portal-app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 76px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  padding: 0.65rem clamp(1rem, 3vw, 1.8rem);
+}
+
+.portal-app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--ink);
+}
+
+.portal-app-brand:hover {
+  text-decoration: none;
+}
+
+.portal-app-brand img {
+  width: 62px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.portal-app-brand span {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.portal-app-brand small,
+.portal-company-mini small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.portal-app-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.portal-app {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 0;
+  min-height: calc(100vh - 76px);
+}
+
+.portal-sidebar {
+  position: sticky;
+  top: 76px;
+  align-self: start;
+  height: calc(100vh - 76px);
+  border-right: 1px solid var(--line);
+  background: #fffaf3;
+  padding: 1rem;
+}
+
+.portal-company-mini {
+  display: grid;
+  gap: 0.15rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fff;
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.portal-company-mini span {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.portal-sidebar nav {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.portal-sidebar nav a {
+  border-radius: var(--r-sm);
+  color: var(--ink-2);
+  font-weight: 900;
+  padding: 0.72rem 0.8rem;
+}
+
+.portal-sidebar nav a:hover,
+.portal-sidebar nav a.active {
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  text-decoration: none;
+}
+
+.portal-app-main {
+  width: min(1220px, 100%);
+  padding: clamp(1rem, 3vw, 1.6rem);
+}
+
+.portal-app-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 1rem;
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+
+.portal-app-hero > div:first-child,
+.portal-status-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: #fff;
+  box-shadow: var(--shadow);
+  padding: clamp(1rem, 2.5vw, 1.35rem);
+}
+
+.portal-app-hero h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.portal-status-panel {
+  display: grid;
+  align-content: center;
+  gap: 0.35rem;
+  background:
+    linear-gradient(135deg, rgba(242, 130, 12, 0.09), rgba(246, 196, 69, 0.13)),
+    #fff;
+}
+
+.portal-status-panel span {
+  color: var(--brand-deep);
+  font-weight: 900;
+}
+
+.portal-status-panel b {
+  color: var(--ink);
+  font-size: 1.55rem;
+}
+
+.portal-status-panel small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.portal-panel {
+  min-width: 0;
+}
+
 .auth-wrap,
 .account-head,
 .corporate-portal-grid {
@@ -326,6 +485,36 @@
 }
 
 @media (max-width: 860px) {
+  .portal-app {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .portal-sidebar nav {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .portal-sidebar nav a {
+    white-space: nowrap;
+  }
+
+  .portal-app-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-app-actions {
+    flex-wrap: wrap;
+    justify-content: end;
+  }
+
   .auth-shell,
   .corporate-portal-grid,
   .account-summary {

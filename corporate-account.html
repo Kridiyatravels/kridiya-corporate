@@ -14,28 +14,54 @@
 <link rel="stylesheet" href="css/corporate.css">
 <link rel="stylesheet" href="css/corporate-portal.css">
 </head>
-<body data-page="corporate-account">
-<header id="site-header" class="site-header"></header>
+<body data-page="corporate-account" data-private-portal="true">
+<header class="portal-app-topbar">
+  <a class="portal-app-brand" href="corporate-account.html" aria-label="Kridiya Business Travel portal">
+    <img src="assets/logo.png" alt="Kridiya Travel and Tourism">
+    <span><b>Kridiya Corporate Portal</b><small>Private company workspace</small></span>
+  </a>
+  <div class="portal-app-actions">
+    <a class="btn btn-outline" href="booking.html">New request</a>
+    <button class="btn btn-primary" id="corp-logout-btn" type="button">Sign out</button>
+  </div>
+</header>
 <main>
-  <section class="section">
-    <div class="container">
-      <div class="account-head">
+  <section class="portal-app">
+    <aside class="portal-sidebar" aria-label="Corporate portal navigation">
+      <div class="portal-company-mini">
+        <span id="corp-sidebar-company">Approved company</span>
+        <small id="corp-sidebar-role">Portal access</small>
+      </div>
+      <nav>
+        <a class="active" href="#overview">Overview</a>
+        <a href="#request">New request</a>
+        <a href="#bookings">Bookings</a>
+        <a href="#flow">Workflow</a>
+        <a href="contact.html">Corporate desk</a>
+      </nav>
+    </aside>
+    <div class="portal-app-main">
+      <div class="portal-app-hero" id="overview">
         <div>
-          <h1>Corporate portal</h1>
-          <p>Company travel requests, approvals, booking visibility, and billing coordination.</p>
+          <p class="brand-line">Secure corporate access</p>
+          <h1>Company travel workspace</h1>
+          <p>Submit requests, track company booking status, and keep travel coordination in one controlled portal.</p>
         </div>
-        <a class="btn btn-primary" href="booking.html">New corporate request</a>
+        <div class="portal-status-panel">
+          <span>Private access</span>
+          <b id="corp-portal-status">Checking access...</b>
+          <small>Supplier cost, profit, and staff notes stay inside Kridiya admin.</small>
+        </div>
       </div>
       <div id="corporate-account-gate" class="account-main empty-state"><p>Checking access...</p></div>
       <div id="corporate-account-app" hidden>
         <div class="corporate-portal-grid">
-          <div class="account-main">
+          <div class="account-main portal-panel">
             <div class="account-section-head">
               <div>
                 <h2>Company access</h2>
                 <p id="corp-access-copy">Loading your account status...</p>
               </div>
-              <a href="login.html">Account</a>
             </div>
             <div class="account-summary">
               <div><span id="corp-visible-items">0</span><b>Company bookings</b><small>Visible through corporate access</small></div>
@@ -44,7 +70,7 @@
             </div>
             <div id="corp-company-list" class="corporate-company-list"></div>
           </div>
-          <div class="account-main">
+          <div class="account-main portal-panel" id="request">
             <div class="account-section-head">
               <div>
                 <h2>New portal request</h2>
@@ -76,7 +102,7 @@
               <button class="btn btn-primary btn-lg" type="submit" data-label="Submit portal request">Submit portal request</button>
             </form>
           </div>
-          <div class="account-main">
+          <div class="account-main portal-panel" id="bookings">
             <div class="account-section-head">
               <div>
                 <h2>Company bookings</h2>
@@ -85,7 +111,7 @@
             </div>
             <div id="corp-booking-list" class="corporate-booking-list"><p class="muted">Loading bookings...</p></div>
           </div>
-          <div class="account-main">
+          <div class="account-main portal-panel" id="flow">
             <div class="account-section-head">
               <div>
                 <h2>Operating flow</h2>
@@ -105,7 +131,6 @@
     </div>
   </section>
 </main>
-<footer id="site-footer" class="footer"></footer>
 <script src="js/corporate.js" defer></script>
 <script src="js/auth.js" defer></script>
 </body>
