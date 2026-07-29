@@ -849,3 +849,85 @@ body[data-private-portal="true"] {
 .corporate-portal-request .field-row {
   margin: 0;
 }
+
+/* Restrained corporate app pass. */
+body[data-private-portal="true"] {
+  background: #f7f4ee;
+}
+
+.portal-app-topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgb(42 31 20 / 0.06);
+}
+
+.portal-app-brand,
+.portal-app-brand small,
+.portal-company-mini small {
+  color: var(--muted);
+}
+
+.portal-app-brand b,
+.portal-company-mini span {
+  color: var(--ink);
+}
+
+.portal-sidebar {
+  background: #fffaf3;
+  border-right: 1px solid var(--line);
+}
+
+.portal-company-mini {
+  background: #fff;
+  border-color: var(--line);
+}
+
+.portal-sidebar nav a {
+  color: var(--ink-2);
+}
+
+.portal-sidebar nav a:hover,
+.portal-sidebar nav a.active {
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+
+.portal-app-hero > div:first-child,
+.portal-status-panel,
+.auth-card,
+.auth-assist,
+.account-main,
+.empty-state,
+.portal-table-card,
+.portal-placeholder,
+.portal-record,
+.portal-statement-grid article,
+.corporate-company-card,
+.corporate-booking-card {
+  background: #fff;
+  box-shadow: 0 14px 38px rgb(42 31 20 / 0.08);
+}
+
+.portal-status-panel {
+  background: #fffaf3;
+}
+
+.account-summary div,
+.account-fact,
+.account-detail,
+.portal-metrics div,
+.portal-placeholder-grid article,
+.auth-checklist li,
+.corporate-portal-flow li {
+  background: #fffaf5;
+}
+
+.site-toast {
+  background: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .portal-app-topbar {
+    position: sticky;
+  }
+}
