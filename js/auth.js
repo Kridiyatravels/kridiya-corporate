@@ -407,6 +407,30 @@ window.KridiyaAuth = (function () {
     return result.data || [];
   }
 
+  async function listMyCorporateQuotes(corporateAccountId) {
+    const user = await currentUser();
+    if (!user) return [];
+    const sb = await client();
+    const result = await sb.rpc("list_my_corporate_quotes", {
+      p_corporate_account_id: corporateAccountId || null,
+      p_limit: 100
+    });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function respondMyCorporateQuote(quoteId, status) {
+    const user = await currentUser();
+    if (!user) throw new Error("Please log in again.");
+    const sb = await client();
+    const result = await sb.rpc("respond_my_corporate_quote", {
+      p_quote_id: quoteId,
+      p_status: status
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
   async function getMyCorporateBookingDetail(bookingId) {
     const user = await currentUser();
     if (!user || !bookingId) return null;
@@ -495,6 +519,8 @@ window.KridiyaAuth = (function () {
     respondToQuote: respondToQuote,
     getMyCorporatePortal: getMyCorporatePortal,
     listMyCorporateBookings: listMyCorporateBookings,
+    listMyCorporateQuotes: listMyCorporateQuotes,
+    respondMyCorporateQuote: respondMyCorporateQuote,
     getMyCorporateBookingDetail: getMyCorporateBookingDetail,
     createMyCorporateRequest: createMyCorporateRequest,
     passwordIssue: passwordIssue,
@@ -1121,7 +1147,9 @@ window.KridiyaAuth = (function () {
         }
         const activeCompany = companies[0];
         const bookings = await KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id);
-        renderCorporatePortal(companies, bookings, activeCompany);
+        const quotes = await KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id).catch(function () { return []; });
+        renderCorporatePortal(companies, bookings, activeCompany, quotes);
+        renderCorporateQuotes(quotes, activeCompany);
         loadCorporatePortalDetails(bookings, activeCompany);
         initCorporatePortalTabs();
         const sidebarCompany = document.getElementById("corp-sidebar-company");
@@ -1151,18 +1179,22 @@ window.KridiyaAuth = (function () {
     });
   }
 
-  function renderCorporatePortal(companies, bookings, activeCompany) {
+  function renderCorporatePortal(companies, bookings, activeCompany, quotes) {
     const companyList = document.getElementById("corp-company-list");
     const bookingList = document.getElementById("corp-booking-list");
+    const visibleQuotes = Array.isArray(quotes) ? quotes : [];
     const openCount = bookings.filter(function (booking) {
       return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
     }).length;
-    document.getElementById("corp-visible-items").textContent = String(bookings.length);
+    const sentQuotes = visibleQuotes.filter(function (quote) {
+      return String(quote.status || "") === "sent";
+    }).length;
+    document.getElementById("corp-visible-items").textContent = String(bookings.length + visibleQuotes.length);
     document.getElementById("corp-company-count").textContent = String(companies.length);
     document.getElementById("corp-company-name").textContent = activeCompany.company_name || "Approved company";
     document.getElementById("corp-member-role").textContent = KridiyaAuth.statusLabel(activeCompany.member_role || "Member");
     const openEl = document.getElementById("corp-open-count");
-    if (openEl) openEl.textContent = String(openCount);
+    if (openEl) openEl.textContent = String(openCount + sentQuotes);
     const financeNote = document.getElementById("corp-finance-note");
     if (financeNote) {
       financeNote.textContent = activeCompany.can_view_finance
@@ -1206,6 +1238,67 @@ window.KridiyaAuth = (function () {
         '<footer><small>Payment: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "not_requested")) + '</small><small>Docs: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.document_status || "not_started")) + '</small>' + amount + '</footer>' +
       '</article>';
     }).join("");
+  }
+
+  function renderCorporateQuotes(quotes, activeCompany) {
+    const quoteList = document.getElementById("corp-quote-list");
+    const permission = document.getElementById("corp-quote-permission");
+    if (!quoteList) return;
+
+    if (permission) {
+      permission.textContent = activeCompany.can_approve_quotes ? "Approval enabled" : "View only";
+      permission.classList.toggle("is-allowed", !!activeCompany.can_approve_quotes);
+    }
+
+    if (!quotes.length) {
+      quoteList.innerHTML = '<div class="portal-empty">No corporate quotes have been released yet. When Kridiya sends priced options from admin, they will appear here.</div>';
+      return;
+    }
+
+    quoteList.innerHTML = quotes.map(function (quote) {
+      const status = String(quote.status || "sent");
+      const canAct = !!activeCompany.can_approve_quotes && status === "sent";
+      const validUntil = quote.valid_until
+        ? new Date(quote.valid_until).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+        : "No expiry set";
+      const amount = String(quote.currency || "AED") + " " + Number(quote.price_amount || 0).toLocaleString("en-GB", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      return '<article class="portal-quote-card" data-quote-id="' + KridiyaAuth.escapeHTML(quote.id) + '">' +
+        '<div class="portal-quote-main">' +
+          '<div><small>' + KridiyaAuth.escapeHTML(quote.booking_reference || "Corporate quote") + '</small><h3>' + KridiyaAuth.escapeHTML(quote.title || quote.booking_title || "Travel option") + '</h3></div>' +
+          '<b>' + KridiyaAuth.escapeHTML(amount) + '</b>' +
+        '</div>' +
+        '<p>' + KridiyaAuth.escapeHTML(quote.description || quote.booking_title || "Quote option prepared by Kridiya corporate desk.") + '</p>' +
+        '<div class="portal-quote-meta">' +
+          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(status)) + '</span>' +
+          '<span>Valid: ' + KridiyaAuth.escapeHTML(validUntil) + '</span>' +
+          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(quote.service_type || "corporate")) + '</span>' +
+        '</div>' +
+        (quote.terms ? '<div class="portal-quote-terms">' + KridiyaAuth.escapeHTML(quote.terms) + '</div>' : '') +
+        (canAct ? '<div class="portal-quote-actions"><button class="btn btn-primary" type="button" data-quote-action="accepted">Accept quote</button><button class="btn btn-outline" type="button" data-quote-action="declined">Decline</button></div>' : '') +
+      '</article>';
+    }).join("");
+
+    quoteList.querySelectorAll("[data-quote-action]").forEach(function (button) {
+      button.addEventListener("click", async function () {
+        const card = button.closest("[data-quote-id]");
+        const status = button.dataset.quoteAction;
+        if (!card || !status) return;
+        const buttons = Array.from(card.querySelectorAll("button"));
+        buttons.forEach(function (btn) { btn.disabled = true; });
+        try {
+          await KridiyaAuth.respondMyCorporateQuote(card.dataset.quoteId, status);
+          toast(status === "accepted" ? "Quote accepted. Kridiya admin has been updated." : "Quote declined. Kridiya admin has been updated.");
+          const fresh = await KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id);
+          renderCorporateQuotes(fresh, activeCompany);
+        } catch (err) {
+          toast(errorMessage(err, "Could not update this quote."));
+          buttons.forEach(function (btn) { btn.disabled = false; });
+        }
+      });
+    });
   }
 
   function initCorporatePortalTabs() {
