@@ -407,6 +407,17 @@ window.KridiyaAuth = (function () {
     return result.data || [];
   }
 
+  async function getMyCorporateBookingDetail(bookingId) {
+    const user = await currentUser();
+    if (!user || !bookingId) return null;
+    const sb = await client();
+    const result = await sb.rpc("get_my_corporate_booking_detail", {
+      p_booking_id: bookingId
+    });
+    if (result.error) throw result.error;
+    return result.data || null;
+  }
+
   async function createMyCorporateRequest(payload) {
     const user = await currentUser();
     if (!user) throw new Error("Please log in again.");
@@ -484,6 +495,7 @@ window.KridiyaAuth = (function () {
     respondToQuote: respondToQuote,
     getMyCorporatePortal: getMyCorporatePortal,
     listMyCorporateBookings: listMyCorporateBookings,
+    getMyCorporateBookingDetail: getMyCorporateBookingDetail,
     createMyCorporateRequest: createMyCorporateRequest,
     passwordIssue: passwordIssue,
     passwordStrength: passwordStrength,
@@ -1110,6 +1122,7 @@ window.KridiyaAuth = (function () {
         const activeCompany = companies[0];
         const bookings = await KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id);
         renderCorporatePortal(companies, bookings, activeCompany);
+        loadCorporatePortalDetails(bookings, activeCompany);
         initCorporatePortalTabs();
         const sidebarCompany = document.getElementById("corp-sidebar-company");
         const sidebarRole = document.getElementById("corp-sidebar-role");
@@ -1120,6 +1133,7 @@ window.KridiyaAuth = (function () {
         initCorporatePortalRequest(activeCompany, function () {
           return KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id).then(function (fresh) {
             renderCorporatePortal(companies, fresh, activeCompany);
+            loadCorporatePortalDetails(fresh, activeCompany);
           });
         });
         gate.hidden = true;
@@ -1222,6 +1236,69 @@ window.KridiyaAuth = (function () {
         openTab(button.dataset.portalTabOpen);
       });
     });
+  }
+
+  async function loadCorporatePortalDetails(bookings, activeCompany) {
+    const docList = document.getElementById("corp-document-list");
+    const paymentList = document.getElementById("corp-payment-list");
+    const statement = document.getElementById("corp-statement-summary");
+    if (!docList || !paymentList || !statement) return;
+
+    docList.innerHTML = '<div class="portal-loading">Checking released documents...</div>';
+    paymentList.innerHTML = '<div class="portal-loading">Checking finance records...</div>';
+    statement.innerHTML = '<div class="portal-loading">Preparing monthly statement summary...</div>';
+
+    try {
+      const detailResults = await Promise.all(
+        bookings.slice(0, 40).map(function (booking) {
+          return KridiyaAuth.getMyCorporateBookingDetail(booking.id).catch(function () { return null; });
+        })
+      );
+      const details = detailResults.filter(Boolean);
+      const documents = [];
+      const payments = [];
+      details.forEach(function (detail) {
+        const booking = detail.booking || {};
+        (detail.documents || []).forEach(function (doc) {
+          documents.push(Object.assign({ booking_reference: booking.booking_reference, booking_title: booking.title }, doc));
+        });
+        (detail.payments || []).forEach(function (payment) {
+          payments.push(Object.assign({ booking_reference: booking.booking_reference, booking_title: booking.title }, payment));
+        });
+      });
+
+      docList.innerHTML = documents.length ? documents.map(function (doc) {
+        return '<article class="portal-record">' +
+          '<div><b>' + KridiyaAuth.escapeHTML(doc.file_name || doc.document_type || "Document") + '</b><small>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + '</small></div>' +
+          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(doc.document_type || "document")) + '</span>' +
+        '</article>';
+      }).join("") : '<div class="portal-empty">No portal-visible documents have been released yet.</div>';
+
+      paymentList.innerHTML = payments.length ? payments.map(function (payment) {
+        return '<article class="portal-record">' +
+          '<div><b>' + KridiyaAuth.escapeHTML(String(payment.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(payment.amount || "0")) + '</b><small>' + KridiyaAuth.escapeHTML(payment.booking_reference || payment.payment_reference || "Payment") + '</small></div>' +
+          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.status || payment.method || "payment")) + '</span>' +
+        '</article>';
+      }).join("") : '<div class="portal-empty">' + (activeCompany.can_view_finance ? "No payment records are released yet." : "Finance records are hidden for this login.") + '</div>';
+
+      const openBookings = bookings.filter(function (booking) {
+        return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
+      }).length;
+      const visibleAmount = bookings.reduce(function (sum, booking) {
+        return sum + (Number(booking.amount) || 0);
+      }, 0);
+      statement.innerHTML =
+        '<div class="portal-statement-grid">' +
+          '<article><span>' + KridiyaAuth.escapeHTML(String(bookings.length)) + '</span><b>Total records</b><small>This portal view</small></article>' +
+          '<article><span>' + KridiyaAuth.escapeHTML(String(openBookings)) + '</span><b>Open records</b><small>Not completed/cancelled</small></article>' +
+          '<article><span>' + KridiyaAuth.escapeHTML(String(documents.length)) + '</span><b>Documents</b><small>Released to portal</small></article>' +
+          '<article><span>' + (activeCompany.can_view_finance ? KridiyaAuth.escapeHTML(String(visibleAmount.toLocaleString("en-GB"))) : "Hidden") + '</span><b>Visible amount</b><small>Finance permission based</small></article>' +
+        '</div>';
+    } catch (err) {
+      docList.innerHTML = '<div class="portal-empty">Could not load document records yet.</div>';
+      paymentList.innerHTML = '<div class="portal-empty">Could not load finance records yet.</div>';
+      statement.innerHTML = '<div class="portal-empty">Could not prepare statement summary yet.</div>';
+    }
   }
 
   function initCorporatePortalRequest(activeCompany, refresh) {
