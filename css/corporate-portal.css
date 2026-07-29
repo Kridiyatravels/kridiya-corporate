@@ -139,7 +139,7 @@ body[data-private-portal="true"] {
   align-content: center;
   gap: 0.35rem;
   background:
-    linear-gradient(135deg, rgba(242, 130, 12, 0.09), rgba(246, 196, 69, 0.13)),
+    linear-gradient(135deg, rgb(201 150 26 / 0.09), rgb(246 196 69 / 0.13)),
     #fff;
 }
 
@@ -486,7 +486,7 @@ body[data-private-portal="true"] {
 }
 
 .portal-permission-chip.is-allowed {
-  border-color: rgba(242, 130, 12, 0.34);
+  border-color: rgb(201 150 26 / 0.34);
   background: var(--brand-soft);
   color: var(--brand-deep);
 }
@@ -497,7 +497,7 @@ body[data-private-portal="true"] {
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background:
-    linear-gradient(135deg, rgba(242, 130, 12, 0.06), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(135deg, rgb(201 150 26 / 0.06), rgb(255 255 255 / 0) 55%),
     #fff;
   padding: 1rem;
 }
@@ -930,4 +930,38 @@ body[data-private-portal="true"] {
   .portal-app-topbar {
     position: sticky;
   }
+}
+
+/* Corporate portal color rule: gold/espresso only, no orange UI. */
+.portal-status-panel {
+  background:
+    linear-gradient(135deg, rgb(201 150 26 / 0.09), rgb(246 196 69 / 0.13)),
+    #fff;
+}
+
+.portal-sidebar nav a:hover,
+.portal-sidebar nav a.active,
+.portal-record span,
+.corporate-company-card span,
+.corporate-booking-card span {
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+
+.portal-status-panel span,
+.portal-metrics span,
+.portal-record b,
+.portal-statement-grid span,
+.account-summary span,
+.auth-checklist b,
+.corporate-portal-flow b {
+  color: var(--brand-deep);
+}
+
+.portal-app input:focus,
+.portal-app select:focus,
+.portal-app textarea:focus,
+.auth-card input:focus {
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 4px rgb(201 150 26 / 0.14);
 }
