@@ -11,24 +11,25 @@
 <body>
 <header id="site-header" class="site-header"></header>
 <main>
-  <section class="section">
-    <div class="container portal-layout">
+  <section class="section public-hero-section">
+    <div class="container portal-layout public-portal-layout">
       <aside class="form-card">
-        <h1>Corporate portal sign in</h1>
-        <p class="muted">Username/password access for approved company contacts. Full data connection requires Supabase Auth URL and RLS setup before launch.</p>
+        <div class="mini-card-head"><span>Approved access</span><b>Corporate portal sign in</b></div>
+        <h1>Private company portal for requests, quotes, documents, and reporting.</h1>
+        <p class="muted">Username/password access is issued only after Kridiya approves and links the company account.</p>
         <form class="form-grid" data-login-form>
           <div class="field"><label>Email / username</label><input name="email" type="email" required placeholder="name@company.com"></div>
           <div class="field"><label>Password</label><input name="password" type="password" required placeholder="Your password"></div>
           <button class="btn btn-primary btn-lg" type="submit">Sign in</button>
-          <a class="btn btn-outline" href="company.html#setup">Request company access</a>
+          <a class="btn btn-outline" href="index.html#apply">Request company access</a>
           <div data-form-status></div>
         </form>
       </aside>
       <section class="portal-shell">
         <div class="portal-card">
           <div class="portal-top">
-            <div><p class="brand-line">Portal preview</p><h2>What corporate users will see</h2></div>
-            <span class="status-chip">RLS protected phase</span>
+            <div><p class="brand-line">Portal preview</p><h2>What approved company users see</h2></div>
+            <span class="status-chip">Company-only data</span>
           </div>
           <div class="portal-stats">
             <div class="portal-stat"><span>8</span><b>Open requests</b></div>

@@ -11,28 +11,35 @@
 <body>
 <header id="site-header" class="site-header"></header>
 <main>
-  <section class="section">
-    <div class="container split">
-      <div>
+  <section class="section public-hero-section">
+    <div class="container split public-hero-grid">
+      <div class="public-hero-copy">
         <p class="brand-line">Company account</p>
-        <h1>Set up your company travel profile before the first urgent trip.</h1>
+        <h1>Build the company travel profile before the first urgent trip.</h1>
         <p class="lede">Kridiya captures the contacts, billing path, LPO/PO rules, policy notes, and approval process your team needs before staff start travelling.</p>
+        <div class="page-kpi-row">
+          <span>Authorized requesters</span>
+          <span>Billing contact</span>
+          <span>LPO/PO rule</span>
+          <span>Travel policy</span>
+        </div>
       </div>
-      <div class="ops-card">
-        <h2>Company readiness</h2>
-        <div class="flight-board">
-          <div class="board-row"><b class="airport-code">CO</b><span>Company legal/trade name and address</span><em class="status-chip">Profile</em></div>
-          <div class="board-row"><b class="airport-code">AP</b><span>Authorized requester and approver</span><em class="status-chip">Control</em></div>
-          <div class="board-row"><b class="airport-code">AR</b><span>Accounts/billing email and payment preference</span><em class="status-chip">Billing</em></div>
+      <div class="ops-card corporate-record-card">
+        <div class="mini-card-head"><span>Company readiness</span><b>Account setup record</b></div>
+        <div class="ops-list">
+          <div><b>Profile</b><span>Company legal/trade name and address</span><em>Required</em></div>
+          <div><b>Control</b><span>Authorized requester and approver</span><em>Required</em></div>
+          <div><b>Billing</b><span>Accounts email and payment preference</span><em>Required</em></div>
+          <div><b>Portal</b><span>Access issued after Kridiya approval</span><em>Admin only</em></div>
         </div>
       </div>
     </div>
   </section>
   <section class="section-tight" id="setup">
     <div class="container split">
-      <div>
+      <div class="form-side-note">
         <h2>Open corporate account</h2>
-        <p>Use `corporate@kridiyatravel.com` for company requests. The form also prepares the same fields needed later for admin corporate accounts.</p>
+        <p>Use corporate@kridiyatravel.com for company requests. This form prepares the same fields Kridiya needs later for admin approval and portal activation.</p>
       </div>
       <div class="form-card">
         <form class="form-grid" data-corporate-form data-prefix="COA">
