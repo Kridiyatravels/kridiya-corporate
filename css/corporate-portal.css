@@ -1754,6 +1754,169 @@ body[data-private-portal="true"] .portal-quote-actions {
   padding-top: 0.85rem;
 }
 
+.vault-head,
+.finance-ledger-head,
+.statement-command,
+.vault-empty {
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #fff, var(--portal-cream));
+  box-shadow: 0 14px 34px rgb(36 27 19 / 0.06);
+  padding: 1rem;
+}
+
+.vault-head,
+.finance-ledger-head,
+.statement-command {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.vault-head div,
+.finance-ledger-head div,
+.statement-command div,
+.vault-empty {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.vault-head span,
+.finance-ledger-head span,
+.statement-command span,
+.vault-empty span {
+  color: var(--portal-gold);
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.vault-head b,
+.finance-ledger-head b,
+.statement-command b,
+.vault-empty b {
+  color: var(--portal-ink);
+  font-size: 1rem;
+}
+
+.vault-head small,
+.finance-ledger-head small,
+.statement-command small,
+.vault-empty p {
+  color: var(--portal-muted);
+  font-weight: 750;
+  margin: 0;
+}
+
+.vault-empty {
+  align-items: start;
+  min-height: 220px;
+  align-content: center;
+}
+
+.document-vault-card,
+.finance-ledger-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 0.78rem;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #fff, var(--portal-cream));
+  box-shadow: 0 16px 42px rgb(36 27 19 / 0.07);
+  padding: 1rem;
+}
+
+.document-vault-card::before,
+.finance-ledger-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--portal-gold), rgb(201 150 26 / 0.18));
+}
+
+.document-vault-main,
+.finance-ledger-main {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.document-vault-main > div,
+.finance-ledger-main > div {
+  display: grid;
+  gap: 0.16rem;
+}
+
+.document-vault-main small,
+.finance-ledger-main small {
+  color: var(--portal-muted);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  font-weight: 900;
+}
+
+.document-vault-main b,
+.finance-ledger-main b {
+  color: var(--portal-ink);
+  font-size: clamp(1.02rem, 2vw, 1.22rem);
+  line-height: 1.18;
+}
+
+.document-vault-main p,
+.finance-ledger-main p {
+  color: var(--portal-muted);
+  font-weight: 750;
+  margin: 0;
+}
+
+.document-vault-main > span,
+.finance-ledger-main > span {
+  flex: none;
+  border: 1px solid rgb(201 150 26 / 0.22);
+  border-radius: 999px;
+  background: var(--portal-gold-soft);
+  color: #6c4a06;
+  padding: 0.42rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.document-vault-meta,
+.finance-ledger-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.35rem 0.6rem;
+  border-top: 1px dashed var(--portal-line);
+  color: var(--portal-muted);
+  padding-top: 0.72rem;
+}
+
+.document-vault-meta span,
+.finance-ledger-meta span {
+  color: var(--portal-muted);
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.document-vault-meta b,
+.finance-ledger-meta b {
+  color: var(--portal-ink);
+  font-size: 0.84rem;
+}
+
+.statement-command {
+  margin-bottom: 0.75rem;
+}
+
 @media (max-width: 1100px) {
   .portal-control-strip,
   body[data-private-portal="true"] .portal-metrics {
@@ -1812,6 +1975,20 @@ body[data-private-portal="true"] .portal-quote-actions {
   }
 
   .quote-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vault-head,
+  .finance-ledger-head,
+  .statement-command,
+  .document-vault-main,
+  .finance-ledger-main {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .document-vault-meta,
+  .finance-ledger-meta {
     grid-template-columns: 1fr;
   }
 }

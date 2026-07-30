@@ -1443,22 +1443,36 @@ window.KridiyaAuth = (function () {
         });
       });
 
-      docList.innerHTML = documents.length ? documents.map(function (doc) {
-        return '<article class="portal-record">' +
-          '<div><b>' + KridiyaAuth.escapeHTML(doc.file_name || doc.document_type || "Document") + '</b><small>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + '</small></div>' +
+      docList.innerHTML = documents.length ? '<div class="vault-head">' +
+        '<div><span>Document vault</span><b>' + KridiyaAuth.escapeHTML(String(documents.length)) + ' released file(s)</b></div>' +
+        '<small>Only documents marked visible to customer in Kridiya admin appear here.</small>' +
+      '</div>' + documents.map(function (doc) {
+        const docType = KridiyaAuth.statusLabel(doc.document_type || "document");
+        const released = doc.created_at
+          ? new Date(doc.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+          : "Release date pending";
+        return '<article class="document-vault-card">' +
+          '<div class="document-vault-main"><div><small>' + KridiyaAuth.escapeHTML(docType) + '</small><b>' + KridiyaAuth.escapeHTML(doc.file_name || docType) + '</b><p>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + ' / ' + KridiyaAuth.escapeHTML(doc.booking_title || "Travel record") + '</p></div>' +
           (doc.storage_path
             ? '<button class="btn btn-outline btn-sm corporate-doc-download" type="button" data-booking-id="' + KridiyaAuth.escapeHTML(doc.booking_id || "") + '" data-document-id="' + KridiyaAuth.escapeHTML(doc.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(doc.storage_path) + '">Download</button>'
-            : '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(doc.document_type || "document")) + '</span>') +
+            : '<span>Pending file</span>') + '</div>' +
+          '<div class="document-vault-meta"><span>Released</span><b>' + KridiyaAuth.escapeHTML(released) + '</b><span>Access</span><b>Company portal</b></div>' +
         '</article>';
-      }).join("") : '<div class="portal-empty">No portal-visible documents have been released yet.</div>';
+      }).join("") : '<div class="vault-empty"><span>Document vault</span><b>No released documents yet</b><p>Tickets, hotel vouchers, visa copies, insurance policies, receipts, and monthly files will appear here after Kridiya releases them from admin.</p></div>';
       initCorporateDocumentDownloads(docList);
 
-      paymentList.innerHTML = payments.length ? payments.map(function (payment) {
-        return '<article class="portal-record">' +
-          '<div><b>' + KridiyaAuth.escapeHTML(String(payment.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(payment.amount || "0")) + '</b><small>' + KridiyaAuth.escapeHTML(payment.booking_reference || payment.payment_reference || "Payment") + '</small></div>' +
-          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.status || payment.method || "payment")) + '</span>' +
+      paymentList.innerHTML = payments.length ? '<div class="finance-ledger-head">' +
+        '<div><span>Finance ledger</span><b>' + KridiyaAuth.escapeHTML(String(payments.length)) + ' payment record(s)</b></div>' +
+        '<small>Finance visibility follows this user permission.</small>' +
+      '</div>' + payments.map(function (payment) {
+        const paidAt = payment.created_at
+          ? new Date(payment.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+          : "Date pending";
+        return '<article class="finance-ledger-card">' +
+          '<div class="finance-ledger-main"><div><small>' + KridiyaAuth.escapeHTML(payment.payment_reference || "Payment record") + '</small><b>' + KridiyaAuth.escapeHTML(String(payment.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(payment.amount || "0")) + '</b><p>' + KridiyaAuth.escapeHTML(payment.booking_reference || payment.booking_title || "Corporate booking") + '</p></div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.status || payment.method || "payment")) + '</span></div>' +
+          '<div class="finance-ledger-meta"><span>Method</span><b>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.method || "not set")) + '</b><span>Date</span><b>' + KridiyaAuth.escapeHTML(paidAt) + '</b></div>' +
         '</article>';
-      }).join("") : '<div class="portal-empty">' + (activeCompany.can_view_finance ? "No payment records are released yet." : "Finance records are hidden for this login.") + '</div>';
+      }).join("") : '<div class="vault-empty"><span>Finance ledger</span><b>' + (activeCompany.can_view_finance ? "No released finance records yet" : "Finance hidden for this login") + '</b><p>' + (activeCompany.can_view_finance ? "Invoices, receipts, payment updates, and refunds will appear here when Kridiya releases them." : "Ask Kridiya admin to enable finance visibility for approved accounts users only.") + '</p></div>';
 
       const openBookings = bookings.filter(function (booking) {
         return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
@@ -1467,6 +1481,10 @@ window.KridiyaAuth = (function () {
         return sum + (Number(booking.amount) || 0);
       }, 0);
       statement.innerHTML =
+        '<div class="statement-command">' +
+          '<div><span>Monthly statement preview</span><b>' + KridiyaAuth.escapeHTML(activeCompany.company_name || "Approved company") + '</b></div>' +
+          '<small>Accounting-ready export is the next system phase.</small>' +
+        '</div>' +
         '<div class="portal-statement-grid">' +
           '<article><span>' + KridiyaAuth.escapeHTML(String(bookings.length)) + '</span><b>Total records</b><small>This portal view</small></article>' +
           '<article><span>' + KridiyaAuth.escapeHTML(String(openBookings)) + '</span><b>Open records</b><small>Not completed/cancelled</small></article>' +
