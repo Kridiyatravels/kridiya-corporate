@@ -197,6 +197,8 @@ function validateForm(form) {
     let msg = "";
     if (!val) msg = "This field is required.";
     else if (input.type === "email" && !RE_EMAIL.test(val)) msg = "Enter a valid email address.";
+    else if (input.minLength > 0 && val.length < input.minLength) msg = "Enter at least " + input.minLength + " characters.";
+    else if (input.maxLength > 0 && val.length > input.maxLength) msg = "Keep this under " + input.maxLength + " characters.";
     setFieldError(input, msg);
     if (msg && !first) first = input;
     if (msg) ok = false;

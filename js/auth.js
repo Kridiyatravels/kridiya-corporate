@@ -614,6 +614,9 @@ window.KridiyaAuth = (function () {
     if (/failed to fetch|network|load failed/i.test(text)) {
       return "Could not reach the secure account service. Please check your internet connection and try again.";
     }
+    if (/bookings_title_length/i.test(text)) {
+      return "Request title must be at least 3 characters. Use a clear title like DXB to London staff trip.";
+    }
     return text;
   }
 
