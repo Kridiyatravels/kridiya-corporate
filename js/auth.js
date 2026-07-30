@@ -1251,13 +1251,18 @@ window.KridiyaAuth = (function () {
       return;
     }
 
-    bookingList.innerHTML = bookings.map(function (booking) {
-      const amount = booking.amount ? '<strong>' + KridiyaAuth.escapeHTML(String(booking.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(booking.amount)) + '</strong>' : '<span>Finance restricted</span>';
+    bookingList.innerHTML = '<div class="booking-command-head">' +
+      '<div><span>Company booking control</span><b>' + KridiyaAuth.escapeHTML(String(bookings.length)) + ' visible record(s)</b></div>' +
+      '<button class="btn btn-outline btn-sm" type="button" onclick="window.KridiyaOpenCorporateTab && window.KridiyaOpenCorporateTab(\'request\')">Create another request</button>' +
+    '</div>' + bookings.map(function (booking) {
+      const amount = booking.amount ? KridiyaAuth.escapeHTML(String(booking.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(booking.amount)) : "Finance restricted";
       const service = KridiyaAuth.statusLabel(booking.service_type || "Corporate");
       const route = booking.route_or_destination || "Route/details being coordinated";
       const dates = [booking.travel_start, booking.travel_end].filter(Boolean).map(function (date) {
         return new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
       }).join(" - ") || "Dates pending";
+      const payment = KridiyaAuth.statusLabel(booking.payment_status || "not_requested");
+      const docs = KridiyaAuth.statusLabel(booking.document_status || "not_started");
       const stage = booking.document_status && booking.document_status !== "not_started"
         ? "Documents"
         : booking.payment_status && booking.payment_status !== "not_requested"
@@ -1265,17 +1270,29 @@ window.KridiyaAuth = (function () {
           : /confirmed|ticketed|completed/i.test(String(booking.status || ""))
             ? "Confirmed"
             : "In progress";
+      const progressClass = stage === "Documents" || stage === "Confirmed" ? "is-docs" : stage === "Payment" ? "is-payment" : "is-request";
       return '<article class="corporate-booking-card">' +
-        '<div class="corporate-booking-head"><b>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate request") + '</b><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status)) + '</span></div>' +
-        '<h3>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type)) + '</h3>' +
-        '<p>' + KridiyaAuth.escapeHTML(service + " / " + route) + '</p>' +
-        '<div class="corporate-booking-progress">' +
-          '<span class="' + (stage === "In progress" ? "is-active" : "is-done") + '">Request</span>' +
+        '<div class="corporate-booking-head">' +
+          '<div><small>Reference</small><b>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate request") + '</b></div>' +
+          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status || "received")) + '</span>' +
+        '</div>' +
+        '<div class="corporate-booking-main">' +
+          '<div><h3>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type)) + '</h3><p>' + KridiyaAuth.escapeHTML(route) + '</p></div>' +
+          '<strong>' + KridiyaAuth.escapeHTML(stage) + '</strong>' +
+        '</div>' +
+        '<div class="corporate-booking-progress ' + progressClass + '" aria-label="Booking progress">' +
+          '<span class="is-done">Request</span>' +
           '<span class="' + (/Payment|Documents|Confirmed/.test(stage) ? "is-done" : "is-active") + '">Quote</span>' +
           '<span class="' + (/Payment|Documents|Confirmed/.test(stage) ? "is-active" : "") + '">Payment</span>' +
           '<span class="' + (/Documents|Confirmed/.test(stage) ? "is-active" : "") + '">Documents</span>' +
         '</div>' +
-        '<footer><small>Travel: ' + KridiyaAuth.escapeHTML(dates) + '</small><small>Payment: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "not_requested")) + '</small><small>Docs: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.document_status || "not_started")) + '</small>' + amount + '</footer>' +
+        '<div class="booking-detail-grid">' +
+          '<div><span>Service</span><b>' + KridiyaAuth.escapeHTML(service) + '</b></div>' +
+          '<div><span>Travel window</span><b>' + KridiyaAuth.escapeHTML(dates) + '</b></div>' +
+          '<div><span>Payment</span><b>' + KridiyaAuth.escapeHTML(payment) + '</b></div>' +
+          '<div><span>Documents</span><b>' + KridiyaAuth.escapeHTML(docs) + '</b></div>' +
+        '</div>' +
+        '<footer><small>Company-scoped record. Supplier cost and internal notes stay private.</small><b>' + amount + '</b></footer>' +
       '</article>';
     }).join("");
   }

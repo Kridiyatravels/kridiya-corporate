@@ -1396,6 +1396,95 @@ body[data-private-portal="true"] .corporate-booking-head {
   gap: 0.75rem;
 }
 
+.booking-command-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #fff, var(--portal-cream));
+  box-shadow: 0 14px 34px rgb(36 27 19 / 0.06);
+  padding: 0.9rem 1rem;
+}
+
+.booking-command-head div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.booking-command-head span {
+  color: var(--portal-gold);
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.booking-command-head b {
+  color: var(--portal-ink);
+  font-size: 1rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--portal-gold), rgb(201 150 26 / 0.18));
+}
+
+body[data-private-portal="true"] .corporate-booking-head {
+  align-items: flex-start;
+}
+
+body[data-private-portal="true"] .corporate-booking-head div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-head small {
+  color: var(--portal-muted);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+body[data-private-portal="true"] .corporate-booking-main {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-main h3 {
+  color: var(--portal-ink);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.18;
+}
+
+body[data-private-portal="true"] .corporate-booking-main p {
+  color: var(--portal-muted);
+  font-weight: 750;
+  margin-top: 0.25rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-main > strong {
+  flex: none;
+  border: 1px solid rgb(201 150 26 / 0.22);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--portal-ink);
+  padding: 0.42rem 0.7rem;
+  font-size: 0.78rem;
+}
+
 .corporate-booking-progress {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1424,6 +1513,47 @@ body[data-private-portal="true"] .corporate-booking-head {
 
 .corporate-booking-progress span.is-done {
   background: #fffaf2;
+}
+
+.booking-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.booking-detail-grid div {
+  display: grid;
+  gap: 0.16rem;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.78);
+  padding: 0.72rem;
+}
+
+.booking-detail-grid span {
+  min-height: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--portal-muted) !important;
+  padding: 0;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+}
+
+.booking-detail-grid b {
+  color: var(--portal-ink);
+  font-size: 0.88rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-card footer {
+  border-top: 1px dashed var(--portal-line);
+  padding-top: 0.75rem;
+}
+
+body[data-private-portal="true"] .corporate-booking-card footer b {
+  color: var(--portal-ink);
 }
 
 body[data-private-portal="true"] .btn-sm {
@@ -1472,5 +1602,15 @@ body[data-private-portal="true"] .portal-record .btn-sm {
 
   .corporate-booking-progress {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-command-head,
+  body[data-private-portal="true"] .corporate-booking-main {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .booking-detail-grid {
+    grid-template-columns: 1fr;
   }
 }
