@@ -1347,6 +1347,7 @@ window.KridiyaAuth = (function () {
     if (!buttons.length || !panels.length) return;
 
     function openTab(name) {
+      if (!name || !panels.some(function (panel) { return panel.dataset.portalPanel === name; })) return;
       buttons.forEach(function (button) {
         button.classList.toggle("active", button.dataset.portalTab === name);
       });
@@ -1356,6 +1357,14 @@ window.KridiyaAuth = (function () {
       const title = document.getElementById("corp-workspace-title");
       const active = buttons.find(function (button) { return button.dataset.portalTab === name; });
       if (title && active) title.textContent = active.textContent.trim();
+      const sidebarLinks = Array.from(document.querySelectorAll(".portal-sidebar nav a"));
+      sidebarLinks.forEach(function (link) {
+        const target = link.dataset.portalTabOpen || String(link.getAttribute("href") || "").replace("#", "");
+        link.classList.toggle("active", target === name);
+      });
+      if (location.hash.replace("#", "") !== name) {
+        history.replaceState(null, "", "#" + name);
+      }
     }
 
     buttons.forEach(function (button) {
@@ -1365,10 +1374,15 @@ window.KridiyaAuth = (function () {
     });
 
     document.querySelectorAll("[data-portal-tab-open]").forEach(function (button) {
-      button.addEventListener("click", function () {
+      button.addEventListener("click", function (e) {
+        if (String(button.getAttribute("href") || "").charAt(0) === "#") e.preventDefault();
         openTab(button.dataset.portalTabOpen);
       });
     });
+
+    window.KridiyaOpenCorporateTab = openTab;
+    const initialTab = location.hash.replace("#", "");
+    if (initialTab) openTab(initialTab);
   }
 
   async function loadCorporatePortalDetails(bookings, activeCompany) {
@@ -1467,21 +1481,32 @@ window.KridiyaAuth = (function () {
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!validateForm(form)) return;
+      if (form.start.value && form.end.value && form.end.value < form.start.value) {
+        banner(form, "End date cannot be before the start date.", "error");
+        form.end.focus();
+        return;
+      }
       banner(form, "");
       busy(form, true, "Submitting...");
       try {
+        const submittedTitle = form.title.value.trim();
         await KridiyaAuth.createMyCorporateRequest({
           corporateAccountId: activeCompany.corporate_account_id,
           serviceType: form.service.value,
-          title: form.title.value,
+          title: submittedTitle,
           route: form.route.value,
           travelStart: form.start.value,
           travelEnd: form.end.value,
           notes: form.notes.value
         });
-        banner(form, "Corporate request submitted. Kridiya admin can now see it under your company.", "success");
         form.reset();
         if (typeof refresh === "function") await refresh();
+        toast("Request submitted. It is now visible in Bookings.");
+        if (typeof window.KridiyaOpenCorporateTab === "function") {
+          window.KridiyaOpenCorporateTab("bookings");
+        } else {
+          banner(form, "Corporate request submitted. Kridiya admin can now see it under your company.", "success");
+        }
       } catch (err) {
         banner(form, errorMessage(err, "Could not submit corporate request."), "error");
       }
