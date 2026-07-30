@@ -317,6 +317,24 @@ window.KridiyaAuth = (function () {
     window.open(result.data.signedUrl, "_blank", "noopener");
   }
 
+  async function openCorporateBookingDocument(bookingId, documentId, storagePath) {
+    const user = await currentUser();
+    if (!user) throw new Error("Please log in again.");
+    if (!bookingId || !documentId || !storagePath) throw new Error("This corporate document is not downloadable yet.");
+    const detail = await getMyCorporateBookingDetail(bookingId);
+    const docs = detail && Array.isArray(detail.documents) ? detail.documents : [];
+    const allowed = docs.some(function (doc) {
+      return doc.id === documentId && doc.storage_path === storagePath && doc.visible_to_customer === true;
+    });
+    if (!allowed) throw new Error("This document is not released to your corporate portal.");
+    const sb = await client();
+    const result = await sb.storage.from("booking-documents").createSignedUrl(storagePath, 300, { download: true });
+    if (result.error || !result.data || !result.data.signedUrl) {
+      throw new Error(result.error ? result.error.message : "Could not prepare document download.");
+    }
+    window.open(result.data.signedUrl, "_blank", "noopener");
+  }
+
   async function listEnquiries() {
     const user = await currentUser();
     if (!user) return [];
@@ -511,6 +529,7 @@ window.KridiyaAuth = (function () {
     listEnquiries: listEnquiries,
     listBookingDocuments: listBookingDocuments,
     openBookingDocument: openBookingDocument,
+    openCorporateBookingDocument: openCorporateBookingDocument,
     listCustomerPayments: listCustomerPayments,
     listRequests: listRequests,
     listQuotes: listQuotes,
@@ -1231,11 +1250,29 @@ window.KridiyaAuth = (function () {
 
     bookingList.innerHTML = bookings.map(function (booking) {
       const amount = booking.amount ? '<strong>' + KridiyaAuth.escapeHTML(String(booking.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(booking.amount)) + '</strong>' : '<span>Finance restricted</span>';
+      const service = KridiyaAuth.statusLabel(booking.service_type || "Corporate");
+      const route = booking.route_or_destination || "Route/details being coordinated";
+      const dates = [booking.travel_start, booking.travel_end].filter(Boolean).map(function (date) {
+        return new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+      }).join(" - ") || "Dates pending";
+      const stage = booking.document_status && booking.document_status !== "not_started"
+        ? "Documents"
+        : booking.payment_status && booking.payment_status !== "not_requested"
+          ? "Payment"
+          : /confirmed|ticketed|completed/i.test(String(booking.status || ""))
+            ? "Confirmed"
+            : "In progress";
       return '<article class="corporate-booking-card">' +
-        '<div><b>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate request") + '</b><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status)) + '</span></div>' +
+        '<div class="corporate-booking-head"><b>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate request") + '</b><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status)) + '</span></div>' +
         '<h3>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type)) + '</h3>' +
-        '<p>' + KridiyaAuth.escapeHTML([booking.service_type, booking.route_or_destination].filter(Boolean).map(KridiyaAuth.statusLabel).join(" · ") || "Corporate travel request") + '</p>' +
-        '<footer><small>Payment: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "not_requested")) + '</small><small>Docs: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.document_status || "not_started")) + '</small>' + amount + '</footer>' +
+        '<p>' + KridiyaAuth.escapeHTML(service + " / " + route) + '</p>' +
+        '<div class="corporate-booking-progress">' +
+          '<span class="' + (stage === "In progress" ? "is-active" : "is-done") + '">Request</span>' +
+          '<span class="' + (/Payment|Documents|Confirmed/.test(stage) ? "is-done" : "is-active") + '">Quote</span>' +
+          '<span class="' + (/Payment|Documents|Confirmed/.test(stage) ? "is-active" : "") + '">Payment</span>' +
+          '<span class="' + (/Documents|Confirmed/.test(stage) ? "is-active" : "") + '">Documents</span>' +
+        '</div>' +
+        '<footer><small>Travel: ' + KridiyaAuth.escapeHTML(dates) + '</small><small>Payment: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "not_requested")) + '</small><small>Docs: ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.document_status || "not_started")) + '</small>' + amount + '</footer>' +
       '</article>';
     }).join("");
   }
@@ -1353,7 +1390,7 @@ window.KridiyaAuth = (function () {
       details.forEach(function (detail) {
         const booking = detail.booking || {};
         (detail.documents || []).forEach(function (doc) {
-          documents.push(Object.assign({ booking_reference: booking.booking_reference, booking_title: booking.title }, doc));
+          documents.push(Object.assign({ booking_id: booking.id, booking_reference: booking.booking_reference, booking_title: booking.title }, doc));
         });
         (detail.payments || []).forEach(function (payment) {
           payments.push(Object.assign({ booking_reference: booking.booking_reference, booking_title: booking.title }, payment));
@@ -1363,9 +1400,12 @@ window.KridiyaAuth = (function () {
       docList.innerHTML = documents.length ? documents.map(function (doc) {
         return '<article class="portal-record">' +
           '<div><b>' + KridiyaAuth.escapeHTML(doc.file_name || doc.document_type || "Document") + '</b><small>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + '</small></div>' +
-          '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(doc.document_type || "document")) + '</span>' +
+          (doc.storage_path
+            ? '<button class="btn btn-outline btn-sm corporate-doc-download" type="button" data-booking-id="' + KridiyaAuth.escapeHTML(doc.booking_id || "") + '" data-document-id="' + KridiyaAuth.escapeHTML(doc.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(doc.storage_path) + '">Download</button>'
+            : '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(doc.document_type || "document")) + '</span>') +
         '</article>';
       }).join("") : '<div class="portal-empty">No portal-visible documents have been released yet.</div>';
+      initCorporateDocumentDownloads(docList);
 
       paymentList.innerHTML = payments.length ? payments.map(function (payment) {
         return '<article class="portal-record">' +
@@ -1392,6 +1432,25 @@ window.KridiyaAuth = (function () {
       paymentList.innerHTML = '<div class="portal-empty">Could not load finance records yet.</div>';
       statement.innerHTML = '<div class="portal-empty">Could not prepare statement summary yet.</div>';
     }
+  }
+
+  function initCorporateDocumentDownloads(docList) {
+    if (!docList || docList.dataset.downloadsReady === "true") return;
+    docList.dataset.downloadsReady = "true";
+    docList.addEventListener("click", async function (e) {
+      const btn = e.target.closest(".corporate-doc-download");
+      if (!btn) return;
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "Preparing...";
+      try {
+        await KridiyaAuth.openCorporateBookingDocument(btn.dataset.bookingId, btn.dataset.documentId, btn.dataset.storagePath);
+      } catch (err) {
+        toast(errorMessage(err, "Could not prepare this corporate document."));
+      }
+      btn.disabled = false;
+      btn.textContent = label;
+    });
   }
 
   function initCorporatePortalRequest(activeCompany, refresh) {
