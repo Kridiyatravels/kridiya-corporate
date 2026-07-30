@@ -1223,6 +1223,36 @@ window.KridiyaAuth = (function () {
         ? "Your login can view company finance fields released to the portal."
         : "Finance is hidden for this login. Kridiya can enable finance access for approved accounts users.";
     }
+    const commandStatus = document.getElementById("corp-command-status");
+    const commandCopy = document.getElementById("corp-command-copy");
+    const recentTitle = document.getElementById("corp-recent-title");
+    const recentCopy = document.getElementById("corp-recent-copy");
+    if (commandStatus && commandCopy) {
+      if (sentQuotes) {
+        commandStatus.textContent = sentQuotes + " quote option(s) need review";
+        commandCopy.textContent = activeCompany.can_approve_quotes
+          ? "Open Quotes to accept or decline options released by Kridiya."
+          : "Quotes are visible, but this login does not have approval permission.";
+      } else if (openCount) {
+        commandStatus.textContent = openCount + " active booking record(s)";
+        commandCopy.textContent = "Track progress across quote, payment, documents, and monthly reporting.";
+      } else {
+        commandStatus.textContent = "Workspace ready";
+        commandCopy.textContent = "Your company can submit a new travel requirement into Kridiya admin.";
+      }
+    }
+    if (recentTitle && recentCopy) {
+      const latest = bookings.slice().sort(function (a, b) {
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      })[0];
+      if (latest) {
+        recentTitle.textContent = latest.booking_reference || latest.title || "Latest corporate booking";
+        recentCopy.textContent = (latest.title || KridiyaAuth.statusLabel(latest.service_type || "Corporate")) + " / " + KridiyaAuth.statusLabel(latest.status || "received");
+      } else {
+        recentTitle.textContent = "No company bookings yet";
+        recentCopy.textContent = "Submit the first request and Kridiya admin will receive it under this company.";
+      }
+    }
     const next = document.getElementById("corp-next-action");
     if (next) {
       next.innerHTML = openCount

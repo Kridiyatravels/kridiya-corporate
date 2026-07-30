@@ -1227,6 +1227,62 @@ body[data-private-portal="true"] .portal-tab-panel {
   padding: 1.15rem;
 }
 
+.portal-command-center {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr 0.95fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.portal-command-center article {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  align-content: space-between;
+  gap: 0.55rem;
+  min-height: 146px;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 92% 12%, rgb(201 150 26 / 0.14), transparent 8rem),
+    linear-gradient(135deg, #fff, var(--portal-cream));
+  box-shadow: 0 16px 42px rgb(36 27 19 / 0.07);
+  padding: 1rem;
+}
+
+.portal-command-center article::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--portal-gold), rgb(201 150 26 / 0.14));
+}
+
+.portal-command-center span {
+  color: var(--portal-gold);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.portal-command-center b {
+  color: var(--portal-ink);
+  font-size: clamp(1.02rem, 2vw, 1.22rem);
+  line-height: 1.18;
+}
+
+.portal-command-center p {
+  color: var(--portal-muted);
+  font-weight: 750;
+  margin: 0;
+}
+
+.command-actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
 .portal-operations-grid {
   display: grid;
   grid-template-columns: 1.35fr 0.65fr;
@@ -1321,6 +1377,15 @@ body[data-private-portal="true"] .mini-card-head b {
   color: var(--portal-ink);
   font-size: 1.15rem;
   margin-top: 0.18rem;
+}
+
+body[data-private-portal="true"] .mini-card-head small {
+  display: block;
+  max-width: 720px;
+  color: var(--portal-muted);
+  font-weight: 750;
+  line-height: 1.55;
+  margin-top: 0.35rem;
 }
 
 .request-policy-panel {
@@ -1924,7 +1989,8 @@ body[data-private-portal="true"] .portal-quote-actions {
   }
 
   .portal-request-layout,
-  .portal-operations-grid {
+  .portal-operations-grid,
+  .portal-command-center {
     grid-template-columns: 1fr;
   }
 }
