@@ -1567,6 +1567,193 @@ body[data-private-portal="true"] .portal-record .btn-sm {
   flex: none;
 }
 
+.quote-desk-head,
+.quote-desk-empty {
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, #fff, var(--portal-cream));
+  box-shadow: 0 14px 34px rgb(36 27 19 / 0.06);
+  padding: 1rem;
+}
+
+.quote-desk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.quote-desk-head div,
+.quote-desk-empty {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.quote-desk-head span,
+.quote-desk-empty span {
+  color: var(--portal-gold);
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.quote-desk-head b,
+.quote-desk-empty b {
+  color: var(--portal-ink);
+  font-size: 1rem;
+}
+
+.quote-desk-head small,
+.quote-desk-empty p {
+  color: var(--portal-muted);
+  font-weight: 750;
+  margin: 0;
+}
+
+.quote-desk-empty {
+  align-items: start;
+  min-height: 220px;
+  align-content: center;
+}
+
+body[data-private-portal="true"] .portal-quote-card {
+  position: relative;
+  overflow: hidden;
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
+body[data-private-portal="true"] .portal-quote-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--portal-gold), rgb(201 150 26 / 0.16));
+}
+
+body[data-private-portal="true"] .portal-quote-card.is-accepted::before {
+  background: linear-gradient(180deg, #8a6b16, rgb(201 150 26 / 0.18));
+}
+
+body[data-private-portal="true"] .portal-quote-card.is-declined::before {
+  background: linear-gradient(180deg, #8b7b66, rgb(139 123 102 / 0.16));
+}
+
+.quote-packet-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.quote-packet-top > div:first-child {
+  display: grid;
+  gap: 0.16rem;
+}
+
+.quote-packet-top small {
+  color: var(--portal-muted);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  font-weight: 900;
+}
+
+.quote-packet-top h3 {
+  color: var(--portal-ink);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.18;
+}
+
+.quote-amount {
+  flex: none;
+  min-width: 170px;
+  border: 1px solid rgb(201 150 26 / 0.22);
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.75rem;
+  text-align: right;
+}
+
+.quote-amount span {
+  display: block;
+  color: var(--portal-muted);
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.quote-amount b {
+  color: var(--portal-ink);
+  font-size: 1.2rem;
+}
+
+.quote-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.quote-detail-grid div {
+  display: grid;
+  gap: 0.16rem;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.76);
+  padding: 0.72rem;
+}
+
+.quote-detail-grid span {
+  color: var(--portal-muted);
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.quote-detail-grid b {
+  color: var(--portal-ink);
+  font-size: 0.88rem;
+}
+
+body[data-private-portal="true"] .portal-quote-terms {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid rgb(201 150 26 / 0.18);
+  border-left: 4px solid var(--portal-gold);
+  border-radius: 8px;
+  background: #fffaf2;
+  color: var(--portal-ink-2);
+}
+
+body[data-private-portal="true"] .portal-quote-terms span {
+  color: var(--portal-gold);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+body[data-private-portal="true"] .portal-quote-terms p {
+  color: var(--portal-ink-2);
+  font-weight: 750;
+  margin: 0;
+}
+
+body[data-private-portal="true"] .portal-quote-actions {
+  justify-content: space-between;
+  border-top: 1px dashed var(--portal-line);
+}
+
+.quote-view-note {
+  border-top: 1px dashed var(--portal-line);
+  color: var(--portal-muted);
+  font-weight: 800;
+  padding-top: 0.85rem;
+}
+
 @media (max-width: 1100px) {
   .portal-control-strip,
   body[data-private-portal="true"] .portal-metrics {
@@ -1611,6 +1798,20 @@ body[data-private-portal="true"] .portal-record .btn-sm {
   }
 
   .booking-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-desk-head,
+  .quote-packet-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .quote-amount {
+    text-align: left;
+  }
+
+  .quote-detail-grid {
     grid-template-columns: 1fr;
   }
 }
