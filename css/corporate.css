@@ -2688,6 +2688,117 @@ a,
   color: var(--ink-2);
 }
 
+/* Public site finishing pass: tighter rhythm, consistent cards, calmer corporate controls. */
+.public-hero-section,
+.company-command-section,
+.request-intake-section,
+.portal-public-section,
+.contact-desk-section {
+  padding-top: clamp(2.6rem, 6vw, 5.4rem);
+  padding-bottom: clamp(2.6rem, 6vw, 5.4rem);
+}
+
+.public-hero-grid,
+.company-command-grid,
+.request-intake-grid,
+.portal-public-layout,
+.contact-desk-grid {
+  gap: clamp(1.35rem, 4vw, 3.2rem);
+}
+
+.brand-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.brand-line::before {
+  content: "";
+  width: 34px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--gold);
+}
+
+.form-card,
+.ops-card,
+.portal-card,
+.feature-card,
+.team-card,
+.service-detail,
+.corporate-record-card {
+  border-color: var(--line-strong);
+}
+
+.form-card,
+.ops-card,
+.portal-card,
+.service-detail,
+.services-control-board,
+.company-operating-board article,
+.portal-module-grid article,
+.contact-support-list article,
+.request-quality-grid article {
+  box-shadow: 0 16px 42px -34px rgb(36 27 19 / 0.34);
+}
+
+.field input,
+.field select,
+.field textarea {
+  min-height: 48px;
+  border-color: var(--line-strong);
+  background: #fff;
+}
+
+.field textarea {
+  min-height: 126px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 4px rgb(246 196 69 / 0.16);
+}
+
+.btn-primary,
+.header-actions .btn-primary {
+  border: 1px solid rgb(111 84 18 / 0.16);
+  background: #fff5e6;
+}
+
+.btn-primary:hover,
+.header-actions .btn-primary:hover {
+  background: #fff;
+  box-shadow: 0 10px 22px -18px rgb(36 27 19 / 0.36);
+}
+
+.main-nav a,
+.nav-drop > button {
+  min-height: 42px;
+}
+
+.drop-menu {
+  padding: 0.65rem;
+}
+
+.drop-menu a {
+  min-height: 38px;
+}
+
+.footer {
+  border-top: 1px solid var(--line);
+}
+
+.footer-bar {
+  gap: 0.75rem;
+}
+
+.wa-float {
+  box-shadow: 0 12px 26px -14px rgb(18 140 74 / 0.70);
+}
+
 @media (max-width: 980px) {
   .contact-methods,
   .ops-list div,
@@ -2709,6 +2820,25 @@ a,
 }
 
 @media (max-width: 620px) {
+  .container {
+    width: min(100% - 1.3rem, 1180px);
+  }
+
+  .public-hero-copy h1,
+  .services-hero-content h1,
+  .portal-layout h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+  }
+
+  .hero-actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
   .page-kpi-row,
   .request-flow-strip {
     display: grid;

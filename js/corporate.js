@@ -129,7 +129,7 @@ function renderChrome() {
         </ul></div>
         <div><h4>Contact</h4><p><b>Need help?</b><br><a href="tel:${KRIDIYA.phoneTel}">${KRIDIYA.phoneDisplay}</a></p><p><b>Email</b><br><a href="mailto:${KRIDIYA.emails.corporate}">${KRIDIYA.emails.corporate}</a></p></div>
       </div>
-      <div class="container footer-bar"><span>© ${new Date().getFullYear()} ${KRIDIYA.legal}. All rights reserved.</span><span>corporate.kridiyatravel.com</span></div>`;
+      <div class="container footer-bar"><span>&copy; ${new Date().getFullYear()} ${KRIDIYA.legal}. All rights reserved.</span><span>corporate.kridiyatravel.com</span></div>`;
   }
 
   const wa = document.createElement("a");
