@@ -1253,6 +1253,7 @@ window.KridiyaAuth = (function () {
         recentCopy.textContent = "Submit the first request and Kridiya admin will receive it under this company.";
       }
     }
+    renderCorporateAttentionQueue(bookings, visibleQuotes, activeCompany);
     const next = document.getElementById("corp-next-action");
     if (next) {
       next.innerHTML = openCount
@@ -1323,6 +1324,77 @@ window.KridiyaAuth = (function () {
           '<div><span>Documents</span><b>' + KridiyaAuth.escapeHTML(docs) + '</b></div>' +
         '</div>' +
         '<footer><small>Company-scoped record. Supplier cost and internal notes stay private.</small><b>' + amount + '</b></footer>' +
+      '</article>';
+    }).join("");
+  }
+
+  function renderCorporateAttentionQueue(bookings, quotes, company) {
+    const list = document.getElementById("corp-attention-list");
+    if (!list) return;
+    const items = [];
+    const sentQuotes = (quotes || []).filter(function (quote) {
+      return String(quote.status || "") === "sent";
+    });
+    const activeBookings = (bookings || []).filter(function (booking) {
+      return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
+    });
+    const paymentItems = (bookings || []).filter(function (booking) {
+      return booking.payment_status && !/paid|supplier_paid|refunded|not_requested/i.test(String(booking.payment_status));
+    });
+    const documentItems = (bookings || []).filter(function (booking) {
+      return booking.document_count || (booking.document_status && !/not_started/i.test(String(booking.document_status)));
+    });
+
+    if (sentQuotes.length) {
+      items.push({
+        tone: "quote",
+        label: "Quote review",
+        title: sentQuotes.length + " quote option" + (sentQuotes.length === 1 ? "" : "s") + " waiting",
+        copy: company.can_approve_quotes ? "Accept or decline released options from Kridiya." : "Quote is visible, but approval access is not enabled for this login.",
+        tab: "quotes"
+      });
+    }
+    if (paymentItems.length) {
+      items.push({
+        tone: "payment",
+        label: "Payment",
+        title: paymentItems.length + " payment update" + (paymentItems.length === 1 ? "" : "s"),
+        copy: company.can_view_finance ? "Review visible invoices, receipts, or payment status." : "Finance records are restricted for this login.",
+        tab: "finance"
+      });
+    }
+    if (documentItems.length) {
+      items.push({
+        tone: "document",
+        label: "Documents",
+        title: documentItems.length + " booking" + (documentItems.length === 1 ? "" : "s") + " with document activity",
+        copy: "Open released tickets, vouchers, invoices, receipts, or files.",
+        tab: "documents"
+      });
+    }
+    if (!items.length && activeBookings.length) {
+      items.push({
+        tone: "booking",
+        label: "Tracking",
+        title: activeBookings.length + " active booking record" + (activeBookings.length === 1 ? "" : "s"),
+        copy: "Track quote, payment, document, and status movement.",
+        tab: "bookings"
+      });
+    }
+    if (!items.length) {
+      items.push({
+        tone: "request",
+        label: "Ready",
+        title: "No pending action",
+        copy: "Submit a new request whenever your company has a travel requirement.",
+        tab: "request"
+      });
+    }
+
+    list.innerHTML = items.map(function (item) {
+      return '<article class="portal-attention-item is-' + KridiyaAuth.escapeHTML(item.tone) + '">' +
+        '<div><span>' + KridiyaAuth.escapeHTML(item.label) + '</span><b>' + KridiyaAuth.escapeHTML(item.title) + '</b><p>' + KridiyaAuth.escapeHTML(item.copy) + '</p></div>' +
+        '<button class="btn btn-outline btn-sm" type="button" data-portal-tab-open="' + KridiyaAuth.escapeHTML(item.tab) + '">Open</button>' +
       '</article>';
     }).join("");
   }
