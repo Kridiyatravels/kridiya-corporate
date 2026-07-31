@@ -58,3 +58,7 @@ Value: kridiyatravels.github.io
 ## Full Manual
 
 See [MANUAL.md](MANUAL.md) for setup, operating procedure, approval SQL, permissions, testing checklist, and future admin work.
+
+Admin approval button implementation notes:
+
+[docs/admin-approval-implementation.md](docs/admin-approval-implementation.md)

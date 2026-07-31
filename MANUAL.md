@@ -237,6 +237,10 @@ Highest priority future admin features:
 
 Important: the current workspace does not contain the real admin source code. To build the admin approval button and admin screens, the actual admin app/source repo must be available locally or shared.
 
+Admin approval implementation guide:
+
+`docs/admin-approval-implementation.md`
+
 ## Testing Checklist
 
 Before calling the system ready after changes:
