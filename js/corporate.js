@@ -81,7 +81,7 @@ function renderChrome() {
               <a href="company.html#teams">Employees</a>
             </div></li>
             ${navLink("booking.html", "Book Travel", current)}
-            ${navLink("corporate-account.html", "Portal", current)}
+            ${navLink("portal.html", "Portal", current)}
             ${navLink("contact.html", "Contact", current)}
           </ul>
         </nav>
@@ -110,7 +110,7 @@ function renderChrome() {
         <div><h4>Quick Links</h4><ul class="footer-links">
           <li><a href="company.html">Company Account</a></li>
           <li><a href="booking.html">Book Travel</a></li>
-          <li><a href="corporate-account.html">Corporate Portal</a></li>
+          <li><a href="portal.html">Corporate Portal</a></li>
           <li><a href="contact.html">Contact Desk</a></li>
           <li><a href="${KRIDIYA.mainSite}">Main Kridiya Site</a></li>
         </ul></div>
