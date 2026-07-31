@@ -2007,6 +2007,147 @@ a,
   font-size: clamp(2rem, 3.8vw, 3.5rem);
 }
 
+.portal-public-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.portal-public-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.94), rgb(255 250 242 / 0.72)),
+    radial-gradient(circle at 86% 16%, rgb(246 196 69 / 0.13), transparent 30%);
+}
+
+.portal-public-layout {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(360px, 0.7fr) minmax(0, 1.3fr);
+}
+
+.portal-access-card {
+  position: sticky;
+  top: calc(var(--header-h) + 1rem);
+  overflow: hidden;
+}
+
+.portal-access-card::before,
+.portal-command-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--brand-deep));
+}
+
+.portal-access-rules {
+  display: grid;
+  gap: 0.58rem;
+  margin: 1rem 0;
+}
+
+.portal-access-rules article {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: #fffaf2;
+  padding: 0.72rem 0.8rem;
+}
+
+.portal-access-rules span,
+.portal-module-grid span,
+.portal-governance-board span {
+  display: block;
+  color: var(--brand-deep);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.portal-access-rules b {
+  display: block;
+  margin-top: 0.22rem;
+  color: var(--ink);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.portal-command-card {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1rem, 2.5vw, 1.35rem);
+}
+
+.portal-module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+.portal-module-grid article {
+  min-height: 132px;
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fff, #fffaf2);
+  padding: 0.95rem;
+  box-shadow: 0 14px 34px -32px rgb(36 27 19 / 0.28);
+}
+
+.portal-module-grid b,
+.portal-governance-board b {
+  color: var(--ink);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.portal-governance-section {
+  background: #fff;
+}
+
+.portal-governance-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(380px, 1fr);
+  gap: clamp(1.2rem, 4vw, 3rem);
+  align-items: start;
+}
+
+.portal-governance-grid h2 {
+  max-width: 680px;
+  line-height: 1.04;
+}
+
+.portal-governance-grid p:not(.brand-line) {
+  max-width: 66ch;
+  color: var(--muted);
+  font-weight: 650;
+  line-height: 1.75;
+}
+
+.portal-governance-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+.portal-governance-board article {
+  min-height: 124px;
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffaf2;
+  padding: 0.95rem;
+}
+
 .company-command-section {
   position: relative;
   overflow: hidden;
@@ -2442,8 +2583,14 @@ a,
   .request-intake-grid,
   .request-system-grid,
   .company-command-grid,
-  .company-operating-grid {
+  .company-operating-grid,
+  .portal-public-layout,
+  .portal-governance-grid {
     grid-template-columns: 1fr;
+  }
+
+  .portal-access-card {
+    position: static;
   }
 }
 
@@ -2464,7 +2611,9 @@ a,
   .service-handles,
   .request-quality-grid,
   .request-assurance-panel article,
-  .company-operating-board {
+  .company-operating-board,
+  .portal-module-grid,
+  .portal-governance-board {
     display: grid;
     grid-template-columns: 1fr;
   }
