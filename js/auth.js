@@ -1342,6 +1342,7 @@ window.KridiyaAuth = (function () {
             ? "Confirmed"
             : "In progress";
       const progressClass = stage === "Documents" || stage === "Confirmed" ? "is-docs" : stage === "Payment" ? "is-payment" : "is-request";
+      const nextAction = corporateBookingNextAction(booking, stage);
       return '<article class="corporate-booking-card">' +
         '<div class="corporate-booking-head">' +
           '<div><small>Reference</small><b>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate request") + '</b></div>' +
@@ -1356,6 +1357,12 @@ window.KridiyaAuth = (function () {
           '<span class="' + (/Payment|Documents|Confirmed/.test(stage) ? "is-done" : "is-active") + '">Quote</span>' +
           '<span class="' + (/Payment|Documents|Confirmed/.test(stage) ? "is-active" : "") + '">Payment</span>' +
           '<span class="' + (/Documents|Confirmed/.test(stage) ? "is-active" : "") + '">Documents</span>' +
+        '</div>' +
+        corporateBookingTimelineHTML(booking, stage) +
+        '<div class="corporate-next-action">' +
+          '<span>' + KridiyaAuth.escapeHTML(nextAction.label) + '</span>' +
+          '<b>' + KridiyaAuth.escapeHTML(nextAction.title) + '</b>' +
+          '<p>' + KridiyaAuth.escapeHTML(nextAction.copy) + '</p>' +
         '</div>' +
         '<div class="booking-detail-grid">' +
           '<div><span>Service</span><b>' + KridiyaAuth.escapeHTML(service) + '</b></div>' +
@@ -1374,6 +1381,52 @@ window.KridiyaAuth = (function () {
         '<footer><small>Company-scoped record. Supplier cost and internal notes stay private.</small><b>' + amount + '</b></footer>' +
       '</article>';
     }).join("");
+  }
+
+  function corporateBookingNextAction(booking, stage) {
+    if (isCorporatePaymentHandoff(booking)) {
+      return {
+        label: "Next company action",
+        title: paymentClearanceTitle(booking),
+        copy: paymentClearanceCopy(booking)
+      };
+    }
+    if (/Documents|Confirmed/.test(stage)) {
+      return {
+        label: "Current handover",
+        title: "Documents and final status are being controlled.",
+        copy: "Open Documents for released files. Kridiya will only show customer-safe records here."
+      };
+    }
+    if (/confirmed|ticketed|completed/i.test(String(booking.status || ""))) {
+      return {
+        label: "Current handover",
+        title: "Booking is moving through confirmation.",
+        copy: "Kridiya is checking final supplier confirmation and customer-visible documents."
+      };
+    }
+    return {
+      label: "Current desk action",
+      title: "Kridiya is reviewing the request.",
+      copy: "Your requirement is in the corporate desk. Quote options or follow-up questions will appear here."
+    };
+  }
+
+  function corporateBookingTimelineHTML(booking, stage) {
+    const paymentLevel = paymentClearanceLevel(booking);
+    const docsStarted = booking.document_status && !/not_started/i.test(String(booking.document_status));
+    const confirmed = /confirmed|ticketed|completed/i.test(String(booking.status || ""));
+    const steps = [
+      ["Request received", true, "Requirement is visible to Kridiya admin."],
+      ["Quote prepared", /Payment|Documents|Confirmed/.test(stage), "Customer-safe options are released from the quote desk."],
+      ["Payment/LPO controlled", paymentLevel >= 3 || confirmed, "Payment proof, bank transfer, card link, or LPO is verified."],
+      ["Documents released", docsStarted || confirmed, "Tickets, vouchers, receipts, and reports appear when approved."]
+    ];
+    return '<ol class="corporate-booking-timeline" aria-label="Corporate booking status timeline">' + steps.map(function (step, index) {
+      const done = !!step[1];
+      const current = !done && !steps.slice(0, index).some(function (prior) { return !prior[1]; });
+      return '<li class="' + (done ? "is-done" : current ? "is-current" : "") + '"><span>' + KridiyaAuth.escapeHTML(String(index + 1)) + '</span><div><b>' + KridiyaAuth.escapeHTML(step[0]) + '</b><small>' + KridiyaAuth.escapeHTML(step[2]) + '</small></div></li>';
+    }).join("") + '</ol>';
   }
 
   function isCorporatePaymentHandoff(booking) {
