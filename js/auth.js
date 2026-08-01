@@ -1300,7 +1300,7 @@ window.KridiyaAuth = (function () {
         : '<b>Ready for requests</b><p>Submit the trip requirement once. Kridiya will quote, confirm, document, and report through admin.</p>';
     }
     document.getElementById("corp-access-copy").textContent =
-      (activeCompany.company_name || "Your company") + " is linked to this login. You can see portal-safe company booking status and create new requests.";
+      (activeCompany.company_name || "Your company") + " workspace is connected to Kridiya admin for requests, quote approvals, payment/LPO tracking, documents, and reporting.";
 
     companyList.innerHTML = companies.map(function (company) {
       const chips = [
