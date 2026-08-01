@@ -1230,6 +1230,10 @@ body[data-private-portal="true"] .portal-command {
   gap: 0.85rem;
 }
 
+body[data-private-portal="true"] [data-overview-only][hidden] {
+  display: none !important;
+}
+
 body[data-private-portal="true"] .portal-metrics {
   grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 0.75rem;

@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="assets/favicon-180.png">
 <link rel="canonical" href="https://corporate.kridiyatravel.com/corporate-account.html">
 <link rel="stylesheet" href="css/corporate.css">
-<link rel="stylesheet" href="css/corporate-portal.css">
+<link rel="stylesheet" href="css/corporate-portal.css?v=20260801c">
 </head>
 <body data-page="corporate-account" data-private-portal="true">
 <header class="portal-app-topbar">
@@ -43,7 +43,7 @@
       </nav>
     </aside>
     <div class="portal-app-main">
-      <div class="portal-app-hero" id="overview">
+      <div class="portal-app-hero" id="overview" data-overview-only>
         <div>
           <p class="brand-line">Secure corporate access</p>
           <h1>Company travel control desk</h1>
@@ -63,14 +63,14 @@
       <div id="corporate-account-gate" class="account-main empty-state"><p>Checking access...</p></div>
       <div id="corporate-account-app" hidden>
         <div class="portal-command">
-          <section class="portal-metrics" aria-label="Portal summary">
+          <section class="portal-metrics" aria-label="Portal summary" data-overview-only>
             <div><span id="corp-visible-items">0</span><b>Company bookings</b><small>Visible records</small></div>
             <div><span id="corp-company-count">0</span><b>Company account</b><small id="corp-company-name">Awaiting activation</small></div>
             <div><span id="corp-member-role">Member</span><b>Portal role</b><small>Controlled by Kridiya</small></div>
             <div><span id="corp-open-count">0</span><b>Open items</b><small>Requests in progress</small></div>
           </section>
 
-          <section class="portal-control-strip" aria-label="Corporate travel control stages">
+          <section class="portal-control-strip" aria-label="Corporate travel control stages" data-overview-only>
             <article>
               <span>01</span>
               <b>Request intake</b>
@@ -272,6 +272,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-<script src="js/auth.js?v=20260801a" defer></script>
+<script src="js/auth.js?v=20260801c" defer></script>
 </body>
 </html>

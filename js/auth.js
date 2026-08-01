@@ -1496,6 +1496,10 @@ window.KridiyaAuth = (function () {
       panels.forEach(function (panel) {
         panel.classList.toggle("active", panel.dataset.portalPanel === name);
       });
+      document.body.dataset.portalSection = name;
+      document.querySelectorAll("[data-overview-only]").forEach(function (section) {
+        section.hidden = name !== "overview";
+      });
       const title = document.getElementById("corp-workspace-title");
       const active = buttons.find(function (button) { return button.dataset.portalTab === name; });
       if (title && active) title.textContent = active.textContent.trim();
