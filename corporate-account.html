@@ -39,7 +39,7 @@
         <a href="#bookings" data-portal-tab-open="bookings">Bookings</a>
         <a href="#documents" data-portal-tab-open="documents">Documents</a>
         <a href="#finance" data-portal-tab-open="finance">Finance</a>
-        <a class="portal-support-link" href="contact.html">Support desk</a>
+        <a href="#desk" data-portal-tab-open="desk">Corporate desk</a>
       </nav>
     </aside>
     <div class="portal-app-main">
@@ -115,6 +115,7 @@
               <button type="button" data-portal-tab="documents">Documents</button>
               <button type="button" data-portal-tab="finance">Finance</button>
               <button type="button" data-portal-tab="statement">Statement</button>
+              <button type="button" data-portal-tab="desk">Desk</button>
             </div>
 
             <div class="portal-tab-panel active" data-portal-panel="overview">
@@ -275,6 +276,52 @@
               </div>
               <div id="corp-statement-summary" class="portal-record-list"></div>
             </div>
+
+            <div class="portal-tab-panel" data-portal-panel="desk">
+              <div class="portal-desk-command">
+                <div>
+                  <span>Corporate support desk</span>
+                  <h3>Reach the right Kridiya team without leaving your portal.</h3>
+                  <p>Use this area for urgent travel changes, deadline-sensitive visa movement, VIP handling, payment/LPO follow-up, document release, or monthly reporting support.</p>
+                </div>
+                <div class="portal-desk-actions">
+                  <a class="btn btn-primary" href="https://wa.me/971509413873?text=Hello%20Kridiya%20Business%20Travel%2C%20I%20need%20corporate%20portal%20support." target="_blank" rel="noopener">WhatsApp desk</a>
+                  <a class="btn btn-outline" href="mailto:corporate@kridiyatravel.com?subject=Corporate%20portal%20support">Email desk</a>
+                  <button class="btn btn-outline" type="button" data-portal-tab-open="request">New request</button>
+                </div>
+              </div>
+              <div class="portal-desk-grid">
+                <article>
+                  <span>Urgent change</span>
+                  <b>Flight, hotel, transfer, or visa timing changed</b>
+                  <p>Send traveller name, booking reference, deadline, new route/date, and approval contact.</p>
+                </article>
+                <article>
+                  <span>Approval and LPO</span>
+                  <b>Quote accepted but payment or LPO is pending</b>
+                  <p>Share approver name, LPO number, payment proof, bank transfer reference, or accounts contact.</p>
+                </article>
+                <article>
+                  <span>Documents</span>
+                  <b>Need ticket, voucher, visa, insurance, or receipt release</b>
+                  <p>Kridiya releases only customer-safe documents here after supplier and payment controls are complete.</p>
+                </article>
+                <article>
+                  <span>Monthly reporting</span>
+                  <b>Need a travel summary for accounts or management</b>
+                  <p>Use Statement for portal-visible records, or ask Kridiya to prepare a company-safe monthly handoff.</p>
+                </article>
+              </div>
+              <div class="portal-desk-protocol">
+                <h3>Fast support protocol</h3>
+                <ol>
+                  <li><b>Reference first</b><span>Include your booking reference or request title so Kridiya can find it quickly.</span></li>
+                  <li><b>Deadline clearly</b><span>Tell us the exact date/time if a traveller, visa, hotel, event, or transfer is time-sensitive.</span></li>
+                  <li><b>Approval owner</b><span>For quote or payment movement, include the person authorized to approve or issue LPO.</span></li>
+                  <li><b>One clean request</b><span>Keep passenger names, route, dates, and notes in one message to reduce back-and-forth.</span></li>
+                </ol>
+              </div>
+            </div>
           </section>
         </div>
       </div>
@@ -282,6 +329,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260801m" defer></script>
+  <script src="js/auth.js?v=20260801n" defer></script>
 </body>
 </html>
