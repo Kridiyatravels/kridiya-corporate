@@ -1255,7 +1255,7 @@ window.KridiyaAuth = (function () {
     if (financeNote) {
       financeNote.textContent = activeCompany.can_view_finance
         ? "Your login can view company finance fields released to the portal."
-        : "Finance visibility is not enabled for this login yet. Receipts, invoices, and statements will appear here after Kridiya releases access.";
+        : "Finance visibility is controlled by Kridiya admin. Ask the corporate desk to enable it for accounts or finance users.";
     }
     const commandStatus = document.getElementById("corp-command-status");
     const commandCopy = document.getElementById("corp-command-copy");
@@ -1311,7 +1311,7 @@ window.KridiyaAuth = (function () {
       ];
       return '<div class="corporate-company-card">' +
         '<b>' + KridiyaAuth.escapeHTML(company.company_name || "Company") + '</b>' +
-        '<p>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(company.member_role || "member")) + ' access · ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(company.status || "active")) + '</p>' +
+        '<p>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(company.member_role || "member")) + ' access - ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(company.status || "active")) + '</p>' +
         '<div>' + chips.map(function (chip) { return '<span>' + KridiyaAuth.escapeHTML(chip) + '</span>'; }).join("") + '</div>' +
       '</div>';
     }).join("");
