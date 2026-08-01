@@ -1339,11 +1339,12 @@ window.KridiyaAuth = (function () {
           '<div><span>Documents</span><b>' + KridiyaAuth.escapeHTML(docs) + '</b></div>' +
         '</div>' +
         (needsPaymentHandoff ? '<div class="payment-handoff-panel">' +
-          '<div><span>Payment / LPO handoff</span><b>Quote accepted. Clearance is the next control.</b><p>Kridiya will move this booking forward after payment proof, payment link completion, bank transfer confirmation, or LPO approval is received.</p></div>' +
+          '<div><span>Payment / LPO handoff</span><b>' + KridiyaAuth.escapeHTML(paymentClearanceTitle(booking)) + '</b><p>' + KridiyaAuth.escapeHTML(paymentClearanceCopy(booking)) + '</p></div>' +
           '<div class="payment-handoff-actions">' +
             '<button class="btn btn-outline btn-sm" type="button" onclick="window.KridiyaOpenCorporateTab && window.KridiyaOpenCorporateTab(\'finance\')">Finance status</button>' +
             '<a class="btn btn-primary btn-sm" href="https://wa.me/971509413873?text=Hello%20Kridiya%20Business%20Travel%2C%20I%20want%20to%20confirm%20payment%20or%20LPO%20for%20' + encodeURIComponent(booking.booking_reference || booking.title || "my corporate booking") + '." target="_blank" rel="noopener">Send proof / LPO</a>' +
           '</div>' +
+          paymentClearanceTimelineHTML(booking) +
         '</div>' : '') +
         '<footer><small>Company-scoped record. Supplier cost and internal notes stay private.</small><b>' + amount + '</b></footer>' +
       '</article>';
@@ -1355,6 +1356,45 @@ window.KridiyaAuth = (function () {
     const payment = String(booking && booking.payment_status || "").toLowerCase();
     return /payment_pending|awaiting_payment|quote_accepted/.test(status)
       || (/pending|requested|partial/.test(payment) && !/supplier/.test(payment));
+  }
+
+  function paymentClearanceLevel(booking) {
+    const status = String(booking && booking.status || "").toLowerCase();
+    const payment = String(booking && booking.payment_status || "").toLowerCase();
+    if (/confirmed|paid|ticketed|completed/.test(status) || /paid/.test(payment)) return 4;
+    if (/proof_received|partially_paid/.test(payment)) return 3;
+    if (/request_sent|payment_pending|pending/.test(payment) || /payment_pending/.test(status)) return 2;
+    return 1;
+  }
+
+  function paymentClearanceTitle(booking) {
+    const level = paymentClearanceLevel(booking);
+    if (level >= 4) return "Payment/LPO cleared. Kridiya is continuing supplier confirmation.";
+    if (level === 3) return "Proof or LPO received. Kridiya is verifying the clearance.";
+    if (level === 2) return "Payment request sent. Clearance is waiting from your company.";
+    return "Quote accepted. Clearance is the next control.";
+  }
+
+  function paymentClearanceCopy(booking) {
+    const level = paymentClearanceLevel(booking);
+    if (level >= 4) return "The booking can now move toward confirmation, documents, and customer handover.";
+    if (level === 3) return "Kridiya will confirm the payment/LPO details internally before moving the booking forward.";
+    if (level === 2) return "Send payment proof, bank transfer reference, payment link confirmation, or approved LPO so Kridiya can continue.";
+    return "Kridiya will move this booking forward after payment proof, payment link completion, bank transfer confirmation, or LPO approval is received.";
+  }
+
+  function paymentClearanceTimelineHTML(booking) {
+    const level = paymentClearanceLevel(booking);
+    const steps = [
+      ["Quote accepted", 1],
+      ["Payment requested", 2],
+      ["Proof/LPO received", 3],
+      ["Cleared for confirmation", 4]
+    ];
+    return '<ol class="payment-clearance-timeline" aria-label="Payment clearance progress">' + steps.map(function (step) {
+      const state = level > step[1] ? "is-done" : level === step[1] ? "is-current" : "";
+      return '<li class="' + state + '"><span></span><b>' + KridiyaAuth.escapeHTML(step[0]) + '</b></li>';
+    }).join("") + '</ol>';
   }
 
   function renderCorporateAttentionQueue(bookings, quotes, company) {
@@ -1631,8 +1671,9 @@ window.KridiyaAuth = (function () {
         '<small>Customer-safe payment status only. Supplier cost and staff notes stay private.</small>' +
       '</div>' + paymentHandoffs.map(function (booking) {
         return '<article class="finance-ledger-card payment-handoff-card">' +
-          '<div class="finance-ledger-main"><div><small>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate booking") + '</small><b>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type || "Corporate booking")) + '</b><p>Send payment proof, bank transfer reference, payment link confirmation, or LPO approval to continue supplier confirmation.</p></div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status || "payment_pending")) + '</span></div>' +
+          '<div class="finance-ledger-main"><div><small>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate booking") + '</small><b>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type || "Corporate booking")) + '</b><p>' + KridiyaAuth.escapeHTML(paymentClearanceCopy(booking)) + '</p></div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status || "payment_pending")) + '</span></div>' +
           '<div class="finance-ledger-meta"><span>Amount</span><b>' + KridiyaAuth.escapeHTML(booking.amount ? String(booking.currency || "AED") + " " + String(booking.amount) : "As quoted") + '</b><span>Payment</span><b>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "pending clearance")) + '</b></div>' +
+          paymentClearanceTimelineHTML(booking) +
         '</article>';
       }).join("") : "";
 

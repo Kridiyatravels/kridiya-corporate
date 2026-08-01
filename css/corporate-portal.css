@@ -1713,9 +1713,8 @@ body[data-private-portal="true"] .corporate-booking-main > strong {
 }
 
 .payment-handoff-panel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 1rem;
   border: 1px solid rgb(201 150 26 / 0.28);
   border-radius: 8px;
@@ -1760,6 +1759,65 @@ body[data-private-portal="true"] .corporate-booking-main > strong {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.payment-clearance-timeline {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px dashed rgb(201 150 26 / 0.28);
+}
+
+.payment-clearance-timeline li {
+  position: relative;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem 0.65rem 0 0;
+  color: var(--portal-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.payment-clearance-timeline li::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 1.1rem;
+  right: 0;
+  height: 1px;
+  background: rgb(201 150 26 / 0.2);
+}
+
+.payment-clearance-timeline li:last-child::before {
+  display: none;
+}
+
+.payment-clearance-timeline li > span {
+  width: 0.72rem;
+  height: 0.72rem;
+  min-height: 0;
+  border: 2px solid rgb(201 150 26 / 0.32);
+  border-radius: 999px;
+  background: #fff;
+}
+
+.payment-clearance-timeline li.is-done > span,
+.payment-clearance-timeline li.is-current > span {
+  border-color: var(--portal-gold);
+  background: var(--portal-gold);
+  box-shadow: 0 0 0 4px rgb(201 150 26 / 0.12);
+}
+
+.payment-clearance-timeline li.is-current b {
+  color: var(--portal-ink);
+}
+
+.payment-clearance-timeline li.is-done b {
+  color: var(--portal-gold);
 }
 
 body[data-private-portal="true"] .corporate-booking-card footer {
@@ -2191,8 +2249,7 @@ body[data-private-portal="true"] .portal-quote-actions {
   }
 
   .payment-handoff-panel {
-    align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .payment-handoff-actions {
@@ -2202,6 +2259,22 @@ body[data-private-portal="true"] .portal-quote-actions {
   .payment-handoff-actions .btn {
     justify-content: center;
     width: 100%;
+  }
+
+  .payment-clearance-timeline {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    border-top: 0;
+  }
+
+  .payment-clearance-timeline li {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    padding: 0;
+  }
+
+  .payment-clearance-timeline li::before {
+    display: none;
   }
 
   .quote-desk-head,
