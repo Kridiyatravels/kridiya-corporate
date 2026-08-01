@@ -1441,6 +1441,12 @@ window.KridiyaAuth = (function () {
       const bookingTitle = quote.booking_title || "Corporate booking";
       const service = KridiyaAuth.statusLabel(quote.service_type || "corporate");
       const statusTone = status === "accepted" ? "is-accepted" : status === "declined" ? "is-declined" : "is-sent";
+      const approvalLabel = status === "accepted" ? "Accepted" : status === "declined" ? "Declined" : canAct ? "Action needed" : "View only";
+      const responseNote = status === "accepted"
+        ? "Quote accepted. Kridiya will continue with payment/LPO control and supplier confirmation."
+        : status === "declined"
+          ? "Quote declined. Kridiya has been notified and can prepare another option if required."
+          : "This login can view quotes only. Contact Kridiya corporate desk if approval access is required.";
       return '<article class="portal-quote-card ' + statusTone + '" data-quote-id="' + KridiyaAuth.escapeHTML(quote.id) + '">' +
         '<div class="quote-packet-top">' +
           '<div><small>' + KridiyaAuth.escapeHTML(quote.booking_reference || "Corporate quote") + '</small><h3>' + KridiyaAuth.escapeHTML(quote.title || bookingTitle || "Travel option") + '</h3></div>' +
@@ -1451,10 +1457,10 @@ window.KridiyaAuth = (function () {
           '<div><span>Status</span><b>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(status)) + '</b></div>' +
           '<div><span>Valid until</span><b>' + KridiyaAuth.escapeHTML(validUntil) + '</b></div>' +
           '<div><span>Service</span><b>' + KridiyaAuth.escapeHTML(service) + '</b></div>' +
-          '<div><span>Approval</span><b>' + KridiyaAuth.escapeHTML(canAct ? "Action needed" : "View only") + '</b></div>' +
+          '<div><span>Approval</span><b>' + KridiyaAuth.escapeHTML(approvalLabel) + '</b></div>' +
         '</div>' +
         '<div class="portal-quote-terms"><span>Commercial notes</span><p>' + KridiyaAuth.escapeHTML(quote.terms || "Final booking is completed after company confirmation, payment/LPO clearance, and supplier availability check.") + '</p></div>' +
-        (canAct ? '<div class="portal-quote-actions"><button class="btn btn-primary" type="button" data-quote-action="accepted">Accept quote</button><button class="btn btn-outline" type="button" data-quote-action="declined">Decline option</button></div>' : '<div class="quote-view-note">Ask Kridiya to enable quote approval for this portal user when required.</div>') +
+        (canAct ? '<div class="portal-quote-actions"><button class="btn btn-primary" type="button" data-quote-action="accepted">Accept quote</button><button class="btn btn-outline" type="button" data-quote-action="declined">Decline option</button></div>' : '<div class="quote-view-note">' + KridiyaAuth.escapeHTML(responseNote) + '</div>') +
       '</article>';
     }).join("");
 

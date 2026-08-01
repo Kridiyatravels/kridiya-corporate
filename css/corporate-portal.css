@@ -1801,8 +1801,18 @@ body[data-private-portal="true"] .portal-quote-card.is-accepted::before {
   background: linear-gradient(180deg, #8a6b16, rgb(201 150 26 / 0.18));
 }
 
+body[data-private-portal="true"] .portal-quote-card.is-accepted {
+  background:
+    radial-gradient(circle at 92% 10%, rgb(201 150 26 / 0.16), transparent 8rem),
+    linear-gradient(135deg, #fff, #fffaf2);
+}
+
 body[data-private-portal="true"] .portal-quote-card.is-declined::before {
   background: linear-gradient(180deg, #8b7b66, rgb(139 123 102 / 0.16));
+}
+
+body[data-private-portal="true"] .portal-quote-card.is-declined {
+  opacity: 0.82;
 }
 
 .quote-packet-top {
