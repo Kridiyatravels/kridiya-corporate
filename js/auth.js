@@ -807,6 +807,31 @@ window.KridiyaAuth = (function () {
     return { type: "document", label: KridiyaAuth.statusLabel(doc.document_type || "Document") };
   }
 
+  function expectedDocumentTypes(serviceType) {
+    const service = String(serviceType || "").toLowerCase();
+    if (/visa/.test(service)) return ["Passport copy", "Photo", "Visa form", "Approval/email"];
+    if (/hotel|holiday|package|umrah|mice|event|group/.test(service)) return ["Traveller list", "Voucher", "Invoice/receipt", "Policy if included"];
+    if (/insurance/.test(service)) return ["Passport copy", "Policy", "Invoice/receipt"];
+    if (/transfer/.test(service)) return ["Pickup details", "Voucher", "Driver/contact note"];
+    return ["Passport copy", "Ticket or PNR", "Approval email", "Receipt/invoice"];
+  }
+
+  function documentChecklistHTML(booking, docs) {
+    const releasedTypes = (docs || []).map(function (doc) {
+      return String([doc.document_type, doc.file_name, doc.external_reference].filter(Boolean).join(" ")).toLowerCase();
+    }).join(" ");
+    const expected = expectedDocumentTypes(booking.service_type);
+    const rows = expected.map(function (label) {
+      const key = label.toLowerCase().replace(/\/.*/, "");
+      const done = releasedTypes.indexOf(key) !== -1 || (key === "ticket or pnr" && /ticket|pnr/.test(releasedTypes)) || (key === "invoice" && /invoice|receipt/.test(releasedTypes));
+      return '<span class="' + (done ? "is-ready" : "") + '"><i></i>' + KridiyaAuth.escapeHTML(label) + '</span>';
+    }).join("");
+    return '<article class="document-check-card">' +
+      '<div><small>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate booking") + '</small><b>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type || "Travel record")) + '</b><p>Files appear here only after Kridiya releases them from admin.</p></div>' +
+      '<div class="document-check-list">' + rows + '</div>' +
+    '</article>';
+  }
+
   function quoteDetailRows(q) {
     const od = (q.option_data && typeof q.option_data === "object") ? q.option_data : {};
     let rows = Object.keys(od).map(function (k) {
@@ -1645,22 +1670,32 @@ window.KridiyaAuth = (function () {
         });
       });
 
-      docList.innerHTML = documents.length ? '<div class="vault-head">' +
+      const docsByBooking = documents.reduce(function (map, doc) {
+        const key = doc.booking_id || "unlinked";
+        if (!map[key]) map[key] = [];
+        map[key].push(doc);
+        return map;
+      }, {});
+      const docChecklist = bookings.length ? '<div class="document-check-grid">' + bookings.map(function (booking) {
+        return documentChecklistHTML(booking, docsByBooking[booking.id] || []);
+      }).join("") + '</div>' : "";
+      docList.innerHTML = '<div class="vault-head">' +
         '<div><span>Document vault</span><b>' + KridiyaAuth.escapeHTML(String(documents.length)) + ' released file(s)</b></div>' +
         '<small>Only documents marked visible to customer in Kridiya admin appear here.</small>' +
-      '</div>' + documents.map(function (doc) {
+      '</div>' + docChecklist + (documents.length ? documents.map(function (doc) {
         const docType = KridiyaAuth.statusLabel(doc.document_type || "document");
+        const view = docPresentation(doc);
         const released = doc.created_at
           ? new Date(doc.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
           : "Release date pending";
-        return '<article class="document-vault-card">' +
-          '<div class="document-vault-main"><div><small>' + KridiyaAuth.escapeHTML(docType) + '</small><b>' + KridiyaAuth.escapeHTML(doc.file_name || docType) + '</b><p>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + ' / ' + KridiyaAuth.escapeHTML(doc.booking_title || "Travel record") + '</p></div>' +
+        return '<article class="document-vault-card document-type-' + KridiyaAuth.escapeHTML(view.type) + '">' +
+          '<div class="document-vault-main"><i aria-hidden="true"></i><div><small>' + KridiyaAuth.escapeHTML(view.label || docType) + '</small><b>' + KridiyaAuth.escapeHTML(doc.file_name || docType) + '</b><p>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + ' / ' + KridiyaAuth.escapeHTML(doc.booking_title || "Travel record") + '</p></div>' +
           (doc.storage_path
             ? '<button class="btn btn-outline btn-sm corporate-doc-download" type="button" data-booking-id="' + KridiyaAuth.escapeHTML(doc.booking_id || "") + '" data-document-id="' + KridiyaAuth.escapeHTML(doc.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(doc.storage_path) + '">Download</button>'
             : '<span>Pending file</span>') + '</div>' +
           '<div class="document-vault-meta"><span>Released</span><b>' + KridiyaAuth.escapeHTML(released) + '</b><span>Access</span><b>Company portal</b></div>' +
         '</article>';
-      }).join("") : '<div class="vault-empty"><span>Document vault</span><b>No released documents yet</b><p>Tickets, hotel vouchers, visa copies, insurance policies, receipts, and monthly files will appear here after Kridiya releases them from admin.</p></div>';
+      }).join("") : '<div class="vault-empty"><span>Released files</span><b>No documents released yet</b><p>Tickets, hotel vouchers, visa copies, insurance policies, receipts, and monthly files will appear here after Kridiya releases them from admin.</p></div>');
       initCorporateDocumentDownloads(docList);
 
       const paymentHandoffs = bookings.filter(function (booking) {
