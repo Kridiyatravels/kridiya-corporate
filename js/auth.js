@@ -1227,7 +1227,7 @@ window.KridiyaAuth = (function () {
     if (financeNote) {
       financeNote.textContent = activeCompany.can_view_finance
         ? "Your login can view company finance fields released to the portal."
-        : "Finance is hidden for this login. Kridiya can enable finance access for approved accounts users.";
+        : "Finance visibility is not enabled for this login yet. Receipts, invoices, and statements will appear here after Kridiya releases access.";
     }
     const commandStatus = document.getElementById("corp-command-status");
     const commandCopy = document.getElementById("corp-command-copy");
@@ -1365,7 +1365,7 @@ window.KridiyaAuth = (function () {
         tone: "payment",
         label: "Payment",
         title: paymentItems.length + " payment update" + (paymentItems.length === 1 ? "" : "s"),
-        copy: company.can_view_finance ? "Review visible invoices, receipts, or payment status." : "Finance records are restricted for this login.",
+        copy: company.can_view_finance ? "Review visible invoices, receipts, or payment status." : "Finance records will appear here after Kridiya releases access.",
         tab: "finance"
       });
     }
@@ -1526,9 +1526,14 @@ window.KridiyaAuth = (function () {
       });
     });
 
+    window.addEventListener("hashchange", function () {
+      const tabFromHash = location.hash.replace("#", "");
+      if (tabFromHash) openTab(tabFromHash);
+    });
+
     window.KridiyaOpenCorporateTab = openTab;
     const initialTab = location.hash.replace("#", "");
-    if (initialTab) openTab(initialTab);
+    openTab(initialTab || "overview");
   }
 
   async function loadCorporatePortalDetails(bookings, activeCompany) {
@@ -1589,7 +1594,7 @@ window.KridiyaAuth = (function () {
           '<div class="finance-ledger-main"><div><small>' + KridiyaAuth.escapeHTML(payment.payment_reference || "Payment record") + '</small><b>' + KridiyaAuth.escapeHTML(String(payment.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(payment.amount || "0")) + '</b><p>' + KridiyaAuth.escapeHTML(payment.booking_reference || payment.booking_title || "Corporate booking") + '</p></div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.status || payment.method || "payment")) + '</span></div>' +
           '<div class="finance-ledger-meta"><span>Method</span><b>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.method || "not set")) + '</b><span>Date</span><b>' + KridiyaAuth.escapeHTML(paidAt) + '</b></div>' +
         '</article>';
-      }).join("") : '<div class="vault-empty"><span>Finance ledger</span><b>' + (activeCompany.can_view_finance ? "No released finance records yet" : "Finance hidden for this login") + '</b><p>' + (activeCompany.can_view_finance ? "Invoices, receipts, payment updates, and refunds will appear here when Kridiya releases them." : "Ask Kridiya admin to enable finance visibility for approved accounts users only.") + '</p></div>';
+      }).join("") : '<div class="vault-empty"><span>Finance ledger</span><b>' + (activeCompany.can_view_finance ? "No released finance records yet" : "Finance access pending") + '</b><p>' + (activeCompany.can_view_finance ? "Invoices, receipts, payment updates, and refunds will appear here when Kridiya releases them." : "Receipts, invoices, payment updates, and monthly statements will appear here after Kridiya enables finance access for this login.") + '</p></div>';
 
       const openBookings = bookings.filter(function (booking) {
         return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
@@ -1639,7 +1644,7 @@ window.KridiyaAuth = (function () {
     if (!form || form.dataset.ready === "true") return;
     form.dataset.ready = "true";
     if (!activeCompany.can_request) {
-      form.innerHTML = '<div class="form-banner error" role="alert">Your login can view this company, but request creation is not enabled. Ask Kridiya admin to enable request access.</div>';
+      form.innerHTML = '<div class="form-banner error" role="alert">Your login can view this company, but request creation is not enabled yet. Contact the Kridiya corporate desk to activate request access.</div>';
       return;
     }
     form.addEventListener("submit", async function (e) {

@@ -1124,6 +1124,21 @@ body[data-private-portal="true"] .portal-sidebar nav a.active {
   box-shadow: 0 10px 22px rgb(36 27 19 / 0.06);
 }
 
+body[data-private-portal="true"] .portal-sidebar nav a.portal-support-link {
+  margin-top: 0.7rem;
+  border-top: 1px dashed rgb(201 150 26 / 0.28);
+  border-radius: 0;
+  padding-top: 1rem;
+}
+
+body[data-private-portal="true"] .portal-sidebar nav a.portal-support-link:hover {
+  border-color: transparent;
+  border-top-color: rgb(201 150 26 / 0.28);
+  background: transparent;
+  box-shadow: none;
+  color: var(--brand-deep);
+}
+
 body[data-private-portal="true"] .portal-app-main {
   width: min(1460px, 100%);
   padding: clamp(1rem, 2.4vw, 1.6rem);
