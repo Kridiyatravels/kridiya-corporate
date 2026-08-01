@@ -1763,7 +1763,7 @@ window.KridiyaAuth = (function () {
           '<article><span>' + (activeCompany.can_view_finance ? KridiyaAuth.escapeHTML(String(visibleAmount.toLocaleString("en-GB"))) : "Hidden") + '</span><b>Visible amount</b><small>Finance permission based</small></article>' +
         '</div>' +
         '<div class="statement-row-list">' + (statementRows || '<div class="vault-empty"><span>Statement</span><b>No records yet</b><p>Submit a company request to begin the monthly statement trail.</p></div>') + '</div>';
-      initCorporateStatementExport(bookings, documents, activeCompany);
+      initCorporateStatementActions(bookings, documents, activeCompany);
     } catch (err) {
       docList.innerHTML = '<div class="portal-empty">Could not load document records yet.</div>';
       paymentList.innerHTML = '<div class="portal-empty">Could not load finance records yet.</div>';
@@ -1790,46 +1790,99 @@ window.KridiyaAuth = (function () {
     });
   }
 
-  function initCorporateStatementExport(bookings, documents, activeCompany) {
-    const button = document.getElementById("corp-statement-export");
-    if (!button) return;
-    button.disabled = !(bookings && bookings.length);
-    button.onclick = function () {
-      const docCounts = (documents || []).reduce(function (map, doc) {
-        const key = doc.booking_id || "unlinked";
-        map[key] = (map[key] || 0) + 1;
-        return map;
-      }, {});
-      const rows = [["Reference", "Title", "Service", "Route/Destination", "Travel Start", "Travel End", "Booking Status", "Payment Status", "Document Status", "Released Documents", "Amount"]];
-      (bookings || []).forEach(function (booking) {
-        rows.push([
-          booking.booking_reference || "",
-          booking.title || "",
-          KridiyaAuth.statusLabel(booking.service_type || ""),
-          booking.route_or_destination || "",
-          booking.travel_start || "",
-          booking.travel_end || "",
-          KridiyaAuth.statusLabel(booking.status || ""),
-          KridiyaAuth.statusLabel(booking.payment_status || "not_requested"),
-          KridiyaAuth.statusLabel(booking.document_status || "not_started"),
-          String(docCounts[booking.id] || 0),
-          activeCompany.can_view_finance && booking.amount ? String(booking.currency || "AED") + " " + String(booking.amount) : "Finance hidden"
-        ]);
-      });
-      const csv = rows.map(function (row) {
-        return row.map(function (cell) { return '"' + String(cell).replace(/"/g, '""') + '"'; }).join(",");
-      }).join("\r\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      const date = new Date().toISOString().slice(0, 10);
-      a.href = url;
-      a.download = "kridiya-corporate-statement-" + date + ".csv";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    };
+  function buildCorporateStatementRows(bookings, documents, activeCompany) {
+    const docCounts = (documents || []).reduce(function (map, doc) {
+      const key = doc.booking_id || "unlinked";
+      map[key] = (map[key] || 0) + 1;
+      return map;
+    }, {});
+    const rows = [["Reference", "Title", "Service", "Route/Destination", "Travel Start", "Travel End", "Booking Status", "Payment Status", "Document Status", "Released Documents", "Amount"]];
+    (bookings || []).forEach(function (booking) {
+      rows.push([
+        booking.booking_reference || "",
+        booking.title || "",
+        KridiyaAuth.statusLabel(booking.service_type || ""),
+        booking.route_or_destination || "",
+        booking.travel_start || "",
+        booking.travel_end || "",
+        KridiyaAuth.statusLabel(booking.status || ""),
+        KridiyaAuth.statusLabel(booking.payment_status || "not_requested"),
+        KridiyaAuth.statusLabel(booking.document_status || "not_started"),
+        String(docCounts[booking.id] || 0),
+        activeCompany.can_view_finance && booking.amount ? String(booking.currency || "AED") + " " + String(booking.amount) : "Finance hidden"
+      ]);
+    });
+    return rows;
+  }
+
+  function corporateStatementText(bookings, documents, activeCompany) {
+    const rows = buildCorporateStatementRows(bookings, documents, activeCompany);
+    const company = activeCompany.company_name || "Approved company";
+    const lines = [
+      "Kridiya Corporate Travel Statement",
+      "Company: " + company,
+      "Generated: " + new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+      "Records: " + String(Math.max(rows.length - 1, 0)),
+      "Finance visibility: " + (activeCompany.can_view_finance ? "Enabled for this login" : "Hidden for this login"),
+      ""
+    ];
+    rows.slice(1).forEach(function (row) {
+      lines.push(row[0] + " - " + row[1] + " / " + row[6] + " / Payment: " + row[7] + " / Docs: " + row[9] + " / Amount: " + row[10]);
+    });
+    if (rows.length === 1) lines.push("No company records are visible yet.");
+    lines.push("");
+    lines.push("Supplier cost, margin, and internal staff notes stay inside Kridiya admin.");
+    return lines.join("\n");
+  }
+
+  function initCorporateStatementActions(bookings, documents, activeCompany) {
+    const exportButton = document.getElementById("corp-statement-export");
+    const copyButton = document.getElementById("corp-statement-copy");
+    const printButton = document.getElementById("corp-statement-print");
+    const hasRows = !!(bookings && bookings.length);
+    [exportButton, copyButton, printButton].forEach(function (button) {
+      if (button) button.disabled = !hasRows;
+    });
+
+    if (copyButton) {
+      copyButton.onclick = function () {
+        const text = corporateStatementText(bookings, documents, activeCompany);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            toast("Statement summary copied.");
+          }).catch(function () {
+            toast("Copy failed. Please use Download CSV or Print statement.");
+          });
+        } else {
+          toast("Copy is not available in this browser. Use Download CSV or Print statement.");
+        }
+      };
+    }
+
+    if (printButton) {
+      printButton.onclick = function () {
+        window.print();
+      };
+    }
+
+    if (exportButton) {
+      exportButton.onclick = function () {
+        const rows = buildCorporateStatementRows(bookings, documents, activeCompany);
+        const csv = rows.map(function (row) {
+          return row.map(function (cell) { return '"' + String(cell).replace(/"/g, '""') + '"'; }).join(",");
+        }).join("\r\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const date = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = "kridiya-corporate-statement-" + date + ".csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      };
+    }
   }
 
   function initCorporatePortalRequest(activeCompany, refresh) {
