@@ -1029,6 +1029,24 @@ body[data-private-portal="true"] {
   box-shadow: 0 0 0 4px rgb(201 150 26 / 0.14);
 }
 
+body[data-page="login"] .auth-card .btn-primary {
+  border-color: #241b13;
+  background: #241b13;
+  color: #fffaf2;
+  box-shadow: 0 16px 30px -24px rgb(36 27 19 / 0.7);
+}
+
+body[data-page="login"] .auth-card .btn-primary:hover {
+  background: #3a2b1f;
+  color: #fffaf2;
+}
+
+body[data-page="login"] .auth-card .btn-primary[disabled] {
+  border-color: rgb(36 27 19 / 0.28);
+  background: rgb(36 27 19 / 0.22);
+  color: rgb(36 27 19 / 0.58);
+}
+
 /* Private portal app polish: warm Kridiya theme, no orange UI. */
 body[data-private-portal="true"] {
   --portal-ink: #241b13;
