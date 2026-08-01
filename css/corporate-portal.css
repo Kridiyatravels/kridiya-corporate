@@ -2225,6 +2225,72 @@ body[data-private-portal="true"] .corporate-booking-main > strong {
   background: var(--portal-gold);
 }
 
+.portal-activity-panel {
+  margin-top: 1rem;
+}
+
+.portal-activity-rail {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.portal-activity-item {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) 104px auto;
+  gap: 0.75rem;
+  align-items: center;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff, var(--portal-cream));
+  padding: 0.72rem;
+}
+
+.portal-activity-item > span {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgb(201 150 26 / 0.3);
+  border-radius: 999px;
+  background: var(--portal-gold-soft);
+  color: #6c4a06;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.28rem 0.55rem;
+}
+
+.portal-activity-item b {
+  display: block;
+  color: var(--portal-ink);
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+
+.portal-activity-item small {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--portal-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.portal-activity-item em {
+  color: var(--portal-muted);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 850;
+  text-align: right;
+}
+
+.portal-activity-item.is-payment > span,
+.portal-activity-item.is-quote > span {
+  background: color-mix(in oklab, var(--portal-gold-soft) 70%, #fff);
+}
+
+.portal-activity-item.is-documents > span,
+.portal-activity-item.is-confirmed > span {
+  border-color: rgb(201 150 26 / 0.42);
+  background: rgb(255 255 255 / 0.86);
+}
+
 body[data-private-portal="true"] .corporate-booking-card footer {
   border-top: 1px dashed var(--portal-line);
   padding-top: 0.75rem;
@@ -2793,7 +2859,8 @@ body[data-private-portal="true"] .portal-quote-actions {
   .portal-desk-command,
   .portal-desk-grid,
   .portal-desk-protocol ol,
-  .portal-request-guide ul {
+  .portal-request-guide ul,
+  .portal-activity-item {
     grid-template-columns: 1fr;
   }
 
@@ -2804,6 +2871,10 @@ body[data-private-portal="true"] .portal-quote-actions {
   .portal-desk-actions .btn {
     justify-content: center;
     width: 100%;
+  }
+
+  .portal-activity-item em {
+    text-align: left;
   }
 
   .quote-amount {

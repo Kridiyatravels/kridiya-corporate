@@ -1291,6 +1291,7 @@ window.KridiyaAuth = (function () {
       }
     }
     renderCorporateAttentionQueue(bookings, visibleQuotes, activeCompany);
+    renderCorporateActivityRail(bookings, visibleQuotes);
     const next = document.getElementById("corp-next-action");
     if (next) {
       next.innerHTML = paymentHandoffCount
@@ -1552,6 +1553,55 @@ window.KridiyaAuth = (function () {
     list.innerHTML = items.map(function (item) {
       return '<article class="portal-attention-item is-' + KridiyaAuth.escapeHTML(item.tone) + '">' +
         '<div><span>' + KridiyaAuth.escapeHTML(item.label) + '</span><b>' + KridiyaAuth.escapeHTML(item.title) + '</b><p>' + KridiyaAuth.escapeHTML(item.copy) + '</p></div>' +
+        '<button class="btn btn-outline btn-sm" type="button" data-portal-tab-open="' + KridiyaAuth.escapeHTML(item.tab) + '">Open</button>' +
+      '</article>';
+    }).join("");
+  }
+
+  function renderCorporateActivityRail(bookings, quotes) {
+    const rail = document.getElementById("corp-activity-rail");
+    if (!rail) return;
+    const activities = [];
+    (quotes || []).forEach(function (quote) {
+      activities.push({
+        when: quote.created_at || quote.updated_at,
+        tone: "quote",
+        label: "Quote",
+        title: quote.title || "Quote option released",
+        meta: [quote.booking_reference, quote.status ? KridiyaAuth.statusLabel(quote.status) : "Sent", money(quote.price_amount, quote.currency || "AED")].filter(Boolean).join(" / "),
+        tab: "quotes"
+      });
+    });
+    (bookings || []).forEach(function (booking) {
+      const stage = booking.document_status && booking.document_status !== "not_started"
+        ? "Documents"
+        : isCorporatePaymentHandoff(booking)
+        ? "Payment"
+        : /confirmed|ticketed|completed/i.test(String(booking.status || ""))
+        ? "Confirmed"
+        : "Request";
+      activities.push({
+        when: booking.created_at || booking.updated_at || booking.travel_start,
+        tone: stage.toLowerCase(),
+        label: stage,
+        title: booking.title || booking.booking_reference || "Corporate booking",
+        meta: [booking.booking_reference, KridiyaAuth.statusLabel(booking.service_type || "Corporate"), KridiyaAuth.statusLabel(booking.payment_status || "Payment pending")].filter(Boolean).join(" / "),
+        tab: stage === "Documents" ? "documents" : stage === "Payment" ? "finance" : "bookings"
+      });
+    });
+    activities.sort(function (a, b) {
+      return new Date(b.when || 0) - new Date(a.when || 0);
+    });
+    if (!activities.length) {
+      rail.innerHTML = '<div class="portal-empty">No company movement yet. Submit a request and the activity rail will start tracking Kridiya handling.</div>';
+      return;
+    }
+    rail.innerHTML = activities.slice(0, 5).map(function (item) {
+      const date = item.when ? new Date(item.when).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Live";
+      return '<article class="portal-activity-item is-' + KridiyaAuth.escapeHTML(item.tone) + '">' +
+        '<span>' + KridiyaAuth.escapeHTML(item.label) + '</span>' +
+        '<div><b>' + KridiyaAuth.escapeHTML(item.title) + '</b><small>' + KridiyaAuth.escapeHTML(item.meta || "Corporate portal record") + '</small></div>' +
+        '<em>' + KridiyaAuth.escapeHTML(date) + '</em>' +
         '<button class="btn btn-outline btn-sm" type="button" data-portal-tab-open="' + KridiyaAuth.escapeHTML(item.tab) + '">Open</button>' +
       '</article>';
     }).join("");
