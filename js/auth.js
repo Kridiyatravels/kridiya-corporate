@@ -1214,6 +1214,9 @@ window.KridiyaAuth = (function () {
     const openCount = bookings.filter(function (booking) {
       return !/completed|cancelled|refunded/i.test(String(booking.status || ""));
     }).length;
+    const paymentHandoffCount = bookings.filter(function (booking) {
+      return isCorporatePaymentHandoff(booking);
+    }).length;
     const sentQuotes = visibleQuotes.filter(function (quote) {
       return String(quote.status || "") === "sent";
     }).length;
@@ -1239,6 +1242,9 @@ window.KridiyaAuth = (function () {
         commandCopy.textContent = activeCompany.can_approve_quotes
           ? "Open Quotes to accept or decline options released by Kridiya."
           : "Quotes are visible, but this login does not have approval permission.";
+      } else if (paymentHandoffCount) {
+        commandStatus.textContent = paymentHandoffCount + " payment/LPO step" + (paymentHandoffCount === 1 ? "" : "s") + " waiting";
+        commandCopy.textContent = "Quote is accepted. Kridiya will proceed after payment proof, payment link completion, bank transfer confirmation, or LPO approval.";
       } else if (openCount) {
         commandStatus.textContent = openCount + " active booking record(s)";
         commandCopy.textContent = "Track progress across quote, payment, documents, and monthly reporting.";
@@ -1262,7 +1268,9 @@ window.KridiyaAuth = (function () {
     renderCorporateAttentionQueue(bookings, visibleQuotes, activeCompany);
     const next = document.getElementById("corp-next-action");
     if (next) {
-      next.innerHTML = openCount
+      next.innerHTML = paymentHandoffCount
+        ? '<b>' + KridiyaAuth.escapeHTML(String(paymentHandoffCount)) + ' payment/LPO handoff' + (paymentHandoffCount === 1 ? "" : "s") + '</b><p>Open Bookings or Finance for the accepted quote status. Kridiya will not confirm suppliers until payment or LPO clearance is controlled.</p>'
+        : openCount
         ? '<b>' + KridiyaAuth.escapeHTML(String(openCount)) + ' active item(s)</b><p>Review booking status, documents, payment status, and any pending details requested by Kridiya.</p>'
         : '<b>Ready for requests</b><p>Submit the trip requirement once. Kridiya will quote, confirm, document, and report through admin.</p>';
     }
@@ -1300,9 +1308,10 @@ window.KridiyaAuth = (function () {
       }).join(" - ") || "Dates pending";
       const payment = KridiyaAuth.statusLabel(booking.payment_status || "not_requested");
       const docs = KridiyaAuth.statusLabel(booking.document_status || "not_started");
+      const needsPaymentHandoff = isCorporatePaymentHandoff(booking);
       const stage = booking.document_status && booking.document_status !== "not_started"
         ? "Documents"
-        : booking.payment_status && booking.payment_status !== "not_requested"
+        : needsPaymentHandoff || (booking.payment_status && booking.payment_status !== "not_requested")
           ? "Payment"
           : /confirmed|ticketed|completed/i.test(String(booking.status || ""))
             ? "Confirmed"
@@ -1329,9 +1338,23 @@ window.KridiyaAuth = (function () {
           '<div><span>Payment</span><b>' + KridiyaAuth.escapeHTML(payment) + '</b></div>' +
           '<div><span>Documents</span><b>' + KridiyaAuth.escapeHTML(docs) + '</b></div>' +
         '</div>' +
+        (needsPaymentHandoff ? '<div class="payment-handoff-panel">' +
+          '<div><span>Payment / LPO handoff</span><b>Quote accepted. Clearance is the next control.</b><p>Kridiya will move this booking forward after payment proof, payment link completion, bank transfer confirmation, or LPO approval is received.</p></div>' +
+          '<div class="payment-handoff-actions">' +
+            '<button class="btn btn-outline btn-sm" type="button" onclick="window.KridiyaOpenCorporateTab && window.KridiyaOpenCorporateTab(\'finance\')">Finance status</button>' +
+            '<a class="btn btn-primary btn-sm" href="https://wa.me/971509413873?text=Hello%20Kridiya%20Business%20Travel%2C%20I%20want%20to%20confirm%20payment%20or%20LPO%20for%20' + encodeURIComponent(booking.booking_reference || booking.title || "my corporate booking") + '." target="_blank" rel="noopener">Send proof / LPO</a>' +
+          '</div>' +
+        '</div>' : '') +
         '<footer><small>Company-scoped record. Supplier cost and internal notes stay private.</small><b>' + amount + '</b></footer>' +
       '</article>';
     }).join("");
+  }
+
+  function isCorporatePaymentHandoff(booking) {
+    const status = String(booking && booking.status || "").toLowerCase();
+    const payment = String(booking && booking.payment_status || "").toLowerCase();
+    return /payment_pending|awaiting_payment|quote_accepted/.test(status)
+      || (/pending|requested|partial/.test(payment) && !/supplier/.test(payment));
   }
 
   function renderCorporateAttentionQueue(bookings, quotes, company) {
@@ -1347,6 +1370,9 @@ window.KridiyaAuth = (function () {
     const paymentItems = (bookings || []).filter(function (booking) {
       return booking.payment_status && !/paid|supplier_paid|refunded|not_requested/i.test(String(booking.payment_status));
     });
+    const handoffItems = (bookings || []).filter(function (booking) {
+      return isCorporatePaymentHandoff(booking);
+    });
     const documentItems = (bookings || []).filter(function (booking) {
       return booking.document_count || (booking.document_status && !/not_started/i.test(String(booking.document_status)));
     });
@@ -1360,7 +1386,15 @@ window.KridiyaAuth = (function () {
         tab: "quotes"
       });
     }
-    if (paymentItems.length) {
+    if (handoffItems.length) {
+      items.push({
+        tone: "payment",
+        label: "Payment / LPO",
+        title: handoffItems.length + " accepted quote" + (handoffItems.length === 1 ? "" : "s") + " waiting for clearance",
+        copy: "Payment proof, payment link completion, bank transfer confirmation, or LPO approval is the next step before supplier confirmation.",
+        tab: "bookings"
+      });
+    } else if (paymentItems.length) {
       items.push({
         tone: "payment",
         label: "Payment",
@@ -1589,6 +1623,19 @@ window.KridiyaAuth = (function () {
       }).join("") : '<div class="vault-empty"><span>Document vault</span><b>No released documents yet</b><p>Tickets, hotel vouchers, visa copies, insurance policies, receipts, and monthly files will appear here after Kridiya releases them from admin.</p></div>';
       initCorporateDocumentDownloads(docList);
 
+      const paymentHandoffs = bookings.filter(function (booking) {
+        return isCorporatePaymentHandoff(booking);
+      });
+      const handoffHTML = paymentHandoffs.length ? '<div class="finance-ledger-head payment-handoff-head">' +
+        '<div><span>Payment / LPO clearance</span><b>' + KridiyaAuth.escapeHTML(String(paymentHandoffs.length)) + ' accepted booking' + (paymentHandoffs.length === 1 ? "" : "s") + ' awaiting control</b></div>' +
+        '<small>Customer-safe payment status only. Supplier cost and staff notes stay private.</small>' +
+      '</div>' + paymentHandoffs.map(function (booking) {
+        return '<article class="finance-ledger-card payment-handoff-card">' +
+          '<div class="finance-ledger-main"><div><small>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate booking") + '</small><b>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type || "Corporate booking")) + '</b><p>Send payment proof, bank transfer reference, payment link confirmation, or LPO approval to continue supplier confirmation.</p></div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status || "payment_pending")) + '</span></div>' +
+          '<div class="finance-ledger-meta"><span>Amount</span><b>' + KridiyaAuth.escapeHTML(booking.amount ? String(booking.currency || "AED") + " " + String(booking.amount) : "As quoted") + '</b><span>Payment</span><b>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "pending clearance")) + '</b></div>' +
+        '</article>';
+      }).join("") : "";
+
       paymentList.innerHTML = payments.length ? '<div class="finance-ledger-head">' +
         '<div><span>Finance ledger</span><b>' + KridiyaAuth.escapeHTML(String(payments.length)) + ' payment record(s)</b></div>' +
         '<small>Finance visibility follows this user permission.</small>' +
@@ -1600,7 +1647,7 @@ window.KridiyaAuth = (function () {
           '<div class="finance-ledger-main"><div><small>' + KridiyaAuth.escapeHTML(payment.payment_reference || "Payment record") + '</small><b>' + KridiyaAuth.escapeHTML(String(payment.currency || "AED")) + ' ' + KridiyaAuth.escapeHTML(String(payment.amount || "0")) + '</b><p>' + KridiyaAuth.escapeHTML(payment.booking_reference || payment.booking_title || "Corporate booking") + '</p></div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.status || payment.method || "payment")) + '</span></div>' +
           '<div class="finance-ledger-meta"><span>Method</span><b>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(payment.method || "not set")) + '</b><span>Date</span><b>' + KridiyaAuth.escapeHTML(paidAt) + '</b></div>' +
         '</article>';
-      }).join("") : '<div class="vault-empty"><span>Finance ledger</span><b>' + (activeCompany.can_view_finance ? "No released finance records yet" : "Finance access pending") + '</b><p>' + (activeCompany.can_view_finance ? "Invoices, receipts, payment updates, and refunds will appear here when Kridiya releases them." : "Receipts, invoices, payment updates, and monthly statements will appear here after Kridiya enables finance access for this login.") + '</p></div>';
+      }).join("") + handoffHTML : handoffHTML || '<div class="vault-empty"><span>Finance ledger</span><b>' + (activeCompany.can_view_finance ? "No released finance records yet" : "Finance access pending") + '</b><p>' + (activeCompany.can_view_finance ? "Invoices, receipts, payment updates, and refunds will appear here when Kridiya releases them." : "Receipts, invoices, payment updates, and monthly statements will appear here after Kridiya enables finance access for this login.") + '</p></div>';
 
       const openBookings = bookings.filter(function (booking) {
         return !/completed|cancelled|refunded/i.test(String(booking.status || ""));

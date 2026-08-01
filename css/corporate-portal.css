@@ -1712,6 +1712,56 @@ body[data-private-portal="true"] .corporate-booking-main > strong {
   font-size: 0.88rem;
 }
 
+.payment-handoff-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgb(201 150 26 / 0.28);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 96% 12%, rgb(201 150 26 / 0.16), transparent 6rem),
+    linear-gradient(135deg, #fffaf2, #fff);
+  padding: 0.9rem;
+}
+
+.payment-handoff-panel > div:first-child {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.payment-handoff-panel span {
+  min-height: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--portal-gold);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.payment-handoff-panel b {
+  color: var(--portal-ink);
+}
+
+.payment-handoff-panel p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--portal-muted);
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.payment-handoff-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 body[data-private-portal="true"] .corporate-booking-card footer {
   border-top: 1px dashed var(--portal-line);
   padding-top: 0.75rem;
@@ -2138,6 +2188,20 @@ body[data-private-portal="true"] .portal-quote-actions {
 
   .booking-detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  .payment-handoff-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .payment-handoff-actions {
+    justify-content: stretch;
+  }
+
+  .payment-handoff-actions .btn {
+    justify-content: center;
+    width: 100%;
   }
 
   .quote-desk-head,
