@@ -1731,17 +1731,39 @@ window.KridiyaAuth = (function () {
       const visibleAmount = bookings.reduce(function (sum, booking) {
         return sum + (Number(booking.amount) || 0);
       }, 0);
+      const statementRows = bookings.map(function (booking) {
+        const docsForBooking = documents.filter(function (doc) { return doc.booking_id === booking.id; }).length;
+        const dateRange = [booking.travel_start, booking.travel_end].filter(Boolean).map(function (date) {
+          return new Date(date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+        }).join(" - ") || "Pending";
+        const amount = activeCompany.can_view_finance && booking.amount
+          ? String(booking.currency || "AED") + " " + Number(booking.amount || 0).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : "Finance hidden";
+        return '<article class="statement-row-card">' +
+          '<div><small>' + KridiyaAuth.escapeHTML(booking.booking_reference || "Corporate record") + '</small><b>' + KridiyaAuth.escapeHTML(booking.title || KridiyaAuth.statusLabel(booking.service_type || "Booking")) + '</b><p>' + KridiyaAuth.escapeHTML(booking.route_or_destination || "Route/details pending") + '</p></div>' +
+          '<dl>' +
+            '<div><dt>Service</dt><dd>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.service_type || "Corporate")) + '</dd></div>' +
+            '<div><dt>Travel</dt><dd>' + KridiyaAuth.escapeHTML(dateRange) + '</dd></div>' +
+            '<div><dt>Status</dt><dd>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.status || "received")) + '</dd></div>' +
+            '<div><dt>Payment</dt><dd>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(booking.payment_status || "not_requested")) + '</dd></div>' +
+            '<div><dt>Documents</dt><dd>' + KridiyaAuth.escapeHTML(String(docsForBooking)) + ' released</dd></div>' +
+            '<div><dt>Amount</dt><dd>' + KridiyaAuth.escapeHTML(amount) + '</dd></div>' +
+          '</dl>' +
+        '</article>';
+      }).join("");
       statement.innerHTML =
         '<div class="statement-command">' +
           '<div><span>Monthly statement preview</span><b>' + KridiyaAuth.escapeHTML(activeCompany.company_name || "Approved company") + '</b></div>' +
-          '<small>Accounting-ready export is the next system phase.</small>' +
+          '<small>Company-safe snapshot. Supplier cost, margin, and internal notes remain private.</small>' +
         '</div>' +
         '<div class="portal-statement-grid">' +
           '<article><span>' + KridiyaAuth.escapeHTML(String(bookings.length)) + '</span><b>Total records</b><small>This portal view</small></article>' +
           '<article><span>' + KridiyaAuth.escapeHTML(String(openBookings)) + '</span><b>Open records</b><small>Not completed/cancelled</small></article>' +
           '<article><span>' + KridiyaAuth.escapeHTML(String(documents.length)) + '</span><b>Documents</b><small>Released to portal</small></article>' +
           '<article><span>' + (activeCompany.can_view_finance ? KridiyaAuth.escapeHTML(String(visibleAmount.toLocaleString("en-GB"))) : "Hidden") + '</span><b>Visible amount</b><small>Finance permission based</small></article>' +
-        '</div>';
+        '</div>' +
+        '<div class="statement-row-list">' + (statementRows || '<div class="vault-empty"><span>Statement</span><b>No records yet</b><p>Submit a company request to begin the monthly statement trail.</p></div>') + '</div>';
+      initCorporateStatementExport(bookings, documents, activeCompany);
     } catch (err) {
       docList.innerHTML = '<div class="portal-empty">Could not load document records yet.</div>';
       paymentList.innerHTML = '<div class="portal-empty">Could not load finance records yet.</div>';
@@ -1766,6 +1788,48 @@ window.KridiyaAuth = (function () {
       btn.disabled = false;
       btn.textContent = label;
     });
+  }
+
+  function initCorporateStatementExport(bookings, documents, activeCompany) {
+    const button = document.getElementById("corp-statement-export");
+    if (!button) return;
+    button.disabled = !(bookings && bookings.length);
+    button.onclick = function () {
+      const docCounts = (documents || []).reduce(function (map, doc) {
+        const key = doc.booking_id || "unlinked";
+        map[key] = (map[key] || 0) + 1;
+        return map;
+      }, {});
+      const rows = [["Reference", "Title", "Service", "Route/Destination", "Travel Start", "Travel End", "Booking Status", "Payment Status", "Document Status", "Released Documents", "Amount"]];
+      (bookings || []).forEach(function (booking) {
+        rows.push([
+          booking.booking_reference || "",
+          booking.title || "",
+          KridiyaAuth.statusLabel(booking.service_type || ""),
+          booking.route_or_destination || "",
+          booking.travel_start || "",
+          booking.travel_end || "",
+          KridiyaAuth.statusLabel(booking.status || ""),
+          KridiyaAuth.statusLabel(booking.payment_status || "not_requested"),
+          KridiyaAuth.statusLabel(booking.document_status || "not_started"),
+          String(docCounts[booking.id] || 0),
+          activeCompany.can_view_finance && booking.amount ? String(booking.currency || "AED") + " " + String(booking.amount) : "Finance hidden"
+        ]);
+      });
+      const csv = rows.map(function (row) {
+        return row.map(function (cell) { return '"' + String(cell).replace(/"/g, '""') + '"'; }).join(",");
+      }).join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const date = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = "kridiya-corporate-statement-" + date + ".csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    };
   }
 
   function initCorporatePortalRequest(activeCompany, refresh) {

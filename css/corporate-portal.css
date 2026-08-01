@@ -704,6 +704,76 @@ body[data-private-portal="true"] {
   font-weight: 800;
 }
 
+.statement-row-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.statement-row-card {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 96% 0%, rgb(201 150 26 / 0.08), transparent 5rem),
+    #fff;
+  box-shadow: 0 14px 34px rgb(36 27 19 / 0.055);
+  padding: 1rem;
+}
+
+.statement-row-card small {
+  color: var(--portal-gold);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statement-row-card b {
+  display: block;
+  margin-top: 0.16rem;
+  color: var(--portal-ink);
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  line-height: 1.2;
+}
+
+.statement-row-card p {
+  margin: 0.28rem 0 0;
+  color: var(--portal-muted);
+  font-weight: 750;
+}
+
+.statement-row-card dl {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.statement-row-card dl > div {
+  min-width: 0;
+  border: 1px solid rgb(201 150 26 / 0.16);
+  border-radius: 8px;
+  background: #fffaf2;
+  padding: 0.62rem;
+}
+
+.statement-row-card dt {
+  color: var(--portal-muted);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statement-row-card dd {
+  overflow-wrap: anywhere;
+  margin: 0.24rem 0 0;
+  color: var(--portal-ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
 .corporate-portal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -900,6 +970,10 @@ body[data-private-portal="true"] {
   .portal-overview-grid,
   .portal-placeholder-grid,
   .portal-statement-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .statement-row-card dl {
     grid-template-columns: 1fr;
   }
 
