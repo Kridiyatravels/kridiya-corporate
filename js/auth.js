@@ -1181,9 +1181,15 @@ window.KridiyaAuth = (function () {
         if (sidebarRole) sidebarRole.textContent = KridiyaAuth.statusLabel(activeCompany.member_role || "Member");
         if (portalStatus) portalStatus.textContent = "Active";
         initCorporatePortalRequest(activeCompany, function () {
-          return KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id).then(function (fresh) {
-            renderCorporatePortal(companies, fresh, activeCompany);
-            loadCorporatePortalDetails(fresh, activeCompany);
+          return Promise.all([
+            KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id),
+            KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id).catch(function () { return []; })
+          ]).then(function (results) {
+            const freshBookings = results[0];
+            const freshQuotes = results[1];
+            renderCorporatePortal(companies, freshBookings, activeCompany, freshQuotes);
+            renderCorporateQuotes(freshQuotes, activeCompany);
+            loadCorporatePortalDetails(freshBookings, activeCompany);
           });
         });
         gate.hidden = true;
@@ -1462,8 +1468,13 @@ window.KridiyaAuth = (function () {
         try {
           await KridiyaAuth.respondMyCorporateQuote(card.dataset.quoteId, status);
           toast(status === "accepted" ? "Quote accepted. Kridiya admin has been updated." : "Quote declined. Kridiya admin has been updated.");
-          const fresh = await KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id);
-          renderCorporateQuotes(fresh, activeCompany);
+          const fresh = await Promise.all([
+            KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id),
+            KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id)
+          ]);
+          renderCorporatePortal([activeCompany], fresh[0], activeCompany, fresh[1]);
+          renderCorporateQuotes(fresh[1], activeCompany);
+          loadCorporatePortalDetails(fresh[0], activeCompany);
         } catch (err) {
           toast(errorMessage(err, "Could not update this quote."));
           buttons.forEach(function (btn) { btn.disabled = false; });
