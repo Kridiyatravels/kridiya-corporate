@@ -1946,6 +1946,7 @@ window.KridiyaAuth = (function () {
       form.innerHTML = '<div class="form-banner error" role="alert">Your login can view this company, but request creation is not enabled yet. Contact the Kridiya corporate desk to activate request access.</div>';
       return;
     }
+    initCorporateRequestGuide(form);
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!validateForm(form)) return;
@@ -1980,6 +1981,93 @@ window.KridiyaAuth = (function () {
       }
       busy(form, false);
     });
+  }
+
+  function initCorporateRequestGuide(form) {
+    const guide = document.getElementById("corp-request-guide");
+    const service = form.service;
+    if (!guide || !service) return;
+    const guides = {
+      flight: {
+        title: "Employee flight booking",
+        copy: "Best for staff movement, annual leave, new joiner travel, and urgent rebooking.",
+        titlePlaceholder: "e.g. DXB to LHR staff trip",
+        routePlaceholder: "Origin, destination, trip type, cabin preference",
+        notesPlaceholder: "Traveller names, passport name match, dates, baggage, deadline, approver, payment/LPO details...",
+        points: ["Traveller names exactly as passport", "Route, dates, trip type, cabin", "Baggage, airline preference, deadline", "Approver and payment/LPO status"]
+      },
+      hotel: {
+        title: "Hotel corporate rates",
+        copy: "Use for company rooms, guest stays, executive stays, event accommodation, or monthly hotel needs.",
+        titlePlaceholder: "e.g. Dubai hotel for visiting client",
+        routePlaceholder: "City, hotel area, preferred property or star rating",
+        notesPlaceholder: "Guest names/count, check-in/out, room type, breakfast, budget, billing contact, deadline...",
+        points: ["City or hotel area", "Check-in/out and room count", "Room type, meal plan, budget", "Guest names and billing contact"]
+      },
+      visa: {
+        title: "Business / UAE visit visa",
+        copy: "Use for employee business visas, UAE visit visas for company guests, and visa status follow-up.",
+        titlePlaceholder: "e.g. UAE visit visa for company guest",
+        routePlaceholder: "Nationality, destination country, visa type",
+        notesPlaceholder: "Applicant names, nationality, passport validity, travel date, visa type, documents available, urgency...",
+        points: ["Applicant names and nationality", "Visa type and destination", "Travel date and urgency", "Passport validity and documents"]
+      },
+      holiday: {
+        title: "Holiday / reward trip",
+        copy: "Use for company reward trips, staff annual leave packages, incentives, and leisure group requests.",
+        titlePlaceholder: "e.g. Staff reward trip to Georgia",
+        routePlaceholder: "Destination, travel month, traveller count",
+        notesPlaceholder: "Traveller count, dates, budget, hotel category, inclusions, approvals, payment timeline...",
+        points: ["Destination and date window", "Traveller count and rooms", "Budget and inclusions", "Approver and payment timeline"]
+      },
+      umrah: {
+        title: "Corporate Umrah group",
+        copy: "Use for respectful group handling, flights, hotels, transfers, visa coordination, and package planning.",
+        titlePlaceholder: "e.g. Corporate Umrah group package",
+        routePlaceholder: "Departure city, Makkah/Madinah dates, group size",
+        notesPlaceholder: "Group size, dates, room sharing, hotel category, transport, visa/passport readiness, coordinator...",
+        points: ["Group size and departure city", "Makkah/Madinah date plan", "Room sharing and hotel level", "Visa readiness and coordinator"]
+      },
+      cruise: {
+        title: "Cruise / group travel",
+        copy: "Use for event travel, group packages, cruise movement, conferences, and coordinated staff travel.",
+        titlePlaceholder: "e.g. Group travel for company event",
+        routePlaceholder: "Destination, venue, cruise route, or event city",
+        notesPlaceholder: "Group count, event dates, hotel/transfer needs, delegate names, budget, coordinator...",
+        points: ["Group count and event dates", "Venue, destination, or cruise route", "Hotel and transfer needs", "Delegate/coordinator details"]
+      },
+      insurance: {
+        title: "Travel insurance",
+        copy: "Use for employee insurance, visa-related insurance, group cover, and policy document requests.",
+        titlePlaceholder: "e.g. Travel insurance for 4 staff",
+        routePlaceholder: "Destination country and travel dates",
+        notesPlaceholder: "Traveller names/count, ages if required, destination, travel dates, visa purpose, coverage needs...",
+        points: ["Traveller count and names", "Destination and travel dates", "Coverage type or visa purpose", "Policy deadline"]
+      },
+      other: {
+        title: "Other / multiple services",
+        copy: "Use when the request includes mixed services or needs Kridiya to advise the right handling route.",
+        titlePlaceholder: "e.g. VIP business trip with visa and transfers",
+        routePlaceholder: "Main city, route, hotel, event, or destination",
+        notesPlaceholder: "Explain the full requirement, services needed, deadline, approver, billing/LPO details, urgency...",
+        points: ["Services needed", "People, dates, and destination", "Deadline and priority", "Approver and billing details"]
+      }
+    };
+    function renderGuide() {
+      const data = guides[service.value] || null;
+      if (!data) {
+        guide.innerHTML = '<span>Smart request guide</span><b>Choose a service to see the exact details Kridiya needs.</b><p>This keeps quote preparation clean and reduces WhatsApp back-and-forth.</p>';
+        return;
+      }
+      if (form.title && !form.title.value) form.title.placeholder = data.titlePlaceholder;
+      if (form.route) form.route.placeholder = data.routePlaceholder;
+      if (form.notes) form.notes.placeholder = data.notesPlaceholder;
+      guide.innerHTML = '<span>Smart request guide</span><b>' + KridiyaAuth.escapeHTML(data.title) + '</b><p>' + KridiyaAuth.escapeHTML(data.copy) + '</p><ul>' + data.points.map(function (point) {
+        return '<li>' + KridiyaAuth.escapeHTML(point) + '</li>';
+      }).join("") + '</ul>';
+    }
+    service.addEventListener("change", renderGuide);
+    renderGuide();
   }
 
   function renderPortalOverview(items, quotes, requests) {
