@@ -1217,6 +1217,19 @@ window.KridiyaAuth = (function () {
             loadCorporatePortalDetails(freshBookings, activeCompany);
           });
         });
+        initCorporateDocumentRequest(activeCompany, bookings, function () {
+          return Promise.all([
+            KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id),
+            KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id).catch(function () { return []; })
+          ]).then(function (results) {
+            const freshBookings = results[0];
+            const freshQuotes = results[1];
+            renderCorporatePortal(companies, freshBookings, activeCompany, freshQuotes);
+            renderCorporateQuotes(freshQuotes, activeCompany);
+            loadCorporatePortalDetails(freshBookings, activeCompany);
+            initCorporateDocumentRequest(activeCompany, freshBookings);
+          });
+        });
         gate.hidden = true;
         app.hidden = false;
       } catch (err) {
@@ -2028,6 +2041,64 @@ window.KridiyaAuth = (function () {
         }
       } catch (err) {
         banner(form, errorMessage(err, "Could not submit corporate request."), "error");
+      }
+      busy(form, false);
+    });
+  }
+
+  function initCorporateDocumentRequest(activeCompany, bookings, refresh) {
+    const form = document.getElementById("corp-document-request-form");
+    if (!form) return;
+    const bookingSelect = form.booking_id;
+    if (bookingSelect) {
+      const currentValue = bookingSelect.value;
+      bookingSelect.innerHTML = '<option value="">Choose booking...</option>' + (bookings || []).map(function (booking) {
+        const label = [
+          booking.booking_reference || "Corporate booking",
+          booking.title || KridiyaAuth.statusLabel(booking.service_type || "Travel request")
+        ].filter(Boolean).join(" - ");
+        return '<option value="' + KridiyaAuth.escapeHTML(booking.id || "") + '" data-reference="' + KridiyaAuth.escapeHTML(booking.booking_reference || "") + '" data-title="' + KridiyaAuth.escapeHTML(booking.title || "") + '" data-route="' + KridiyaAuth.escapeHTML(booking.route_or_destination || "") + '">' + KridiyaAuth.escapeHTML(label) + '</option>';
+      }).join("");
+      if (currentValue && Array.from(bookingSelect.options).some(function (option) { return option.value === currentValue; })) {
+        bookingSelect.value = currentValue;
+      }
+    }
+    if (form.dataset.ready === "true") return;
+    form.dataset.ready = "true";
+    if (!activeCompany.can_request) {
+      form.innerHTML = '<div class="vault-empty compact"><span>Document request</span><b>Request access is not enabled</b><p>Ask Kridiya corporate desk to enable request permission for this portal login.</p></div>';
+      return;
+    }
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      if (!validateForm(form)) return;
+      const selected = form.booking_id.options[form.booking_id.selectedIndex];
+      const bookingReference = selected ? selected.dataset.reference : "";
+      const bookingTitle = selected ? selected.dataset.title : "";
+      const route = selected ? selected.dataset.route : "";
+      const docType = form.document_type.value;
+      const note = form.note.value.trim();
+      banner(form, "");
+      busy(form, true, "Requesting...");
+      try {
+        await KridiyaAuth.createMyCorporateRequest({
+          corporateAccountId: activeCompany.corporate_account_id,
+          serviceType: "other",
+          title: "Document request - " + docType,
+          route: route || bookingReference || bookingTitle || "Company document vault",
+          notes: [
+            "Document handoff request from corporate portal.",
+            bookingReference ? "Booking: " + bookingReference : "",
+            bookingTitle ? "Title: " + bookingTitle : "",
+            "Document needed: " + docType,
+            note ? "Company note: " + note : ""
+          ].filter(Boolean).join("\n")
+        });
+        form.reset();
+        if (typeof refresh === "function") await refresh();
+        toast("Document request sent to Kridiya admin.");
+      } catch (err) {
+        banner(form, errorMessage(err, "Could not send this document request."), "error");
       }
       busy(form, false);
     });

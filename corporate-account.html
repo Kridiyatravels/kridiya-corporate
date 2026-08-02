@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="assets/favicon-180.png">
 <link rel="canonical" href="https://corporate.kridiyatravel.com/corporate-account.html">
 <link rel="stylesheet" href="css/corporate.css">
-  <link rel="stylesheet" href="css/corporate-portal.css?v=20260801p">
+  <link rel="stylesheet" href="css/corporate-portal.css?v=20260801q">
 </head>
 <body data-page="corporate-account" data-private-portal="true">
 <header class="portal-app-topbar">
@@ -262,6 +262,39 @@
             </div>
 
             <div class="portal-tab-panel" data-portal-panel="documents">
+              <div class="document-command-panel">
+                <div>
+                  <span>Document vault</span>
+                  <h3>Released files and handover requests</h3>
+                  <p>Customer-safe documents appear here only after Kridiya releases them from admin. You can also request missing files for an existing company booking.</p>
+                </div>
+                <form id="corp-document-request-form" class="document-request-form" novalidate>
+                  <div class="field">
+                    <label for="corp-doc-booking">BOOKING</label>
+                    <select id="corp-doc-booking" name="booking_id" required>
+                      <option value="">Choose booking...</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="corp-doc-type">DOCUMENT NEEDED</label>
+                    <select id="corp-doc-type" name="document_type" required>
+                      <option value="">Choose document...</option>
+                      <option value="Ticket / PNR">Ticket / PNR</option>
+                      <option value="Hotel voucher">Hotel voucher</option>
+                      <option value="Visa document">Visa document</option>
+                      <option value="Insurance policy">Insurance policy</option>
+                      <option value="Receipt / invoice">Receipt / invoice</option>
+                      <option value="Monthly statement">Monthly statement</option>
+                      <option value="Other document">Other document</option>
+                    </select>
+                  </div>
+                  <div class="field document-request-note">
+                    <label for="corp-doc-note">NOTE</label>
+                    <input id="corp-doc-note" name="note" maxlength="220" placeholder="Deadline, traveller name, receipt month, visa file, or handover note">
+                  </div>
+                  <button class="btn btn-outline" type="submit" data-label="Request document">Request document</button>
+                </form>
+              </div>
               <div id="corp-document-list" class="portal-record-list"></div>
               <div class="portal-placeholder-grid">
                 <article><b>Tickets and vouchers</b><p>Visible documents uploaded by Kridiya will appear here after booking confirmation.</p></article>
@@ -346,6 +379,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260801p" defer></script>
+  <script src="js/auth.js?v=20260801q" defer></script>
 </body>
 </html>
