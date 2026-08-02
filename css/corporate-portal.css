@@ -2630,6 +2630,52 @@ body[data-private-portal="true"] .portal-quote-actions {
   grid-column: 1 / -1;
 }
 
+.document-request-form .document-choice-field {
+  grid-column: 1 / -1;
+}
+
+.document-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.48rem;
+}
+
+.document-choice-grid button {
+  min-height: 42px;
+  border: 1px solid var(--portal-line);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff, #fffaf2);
+  color: var(--portal-ink-2);
+  cursor: pointer;
+  font: 900 0.82rem/1.15 var(--font);
+  padding: 0.62rem 0.7rem;
+  text-align: left;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+
+.document-choice-grid button:hover,
+.document-choice-grid button.active {
+  border-color: rgb(201 150 26 / 0.55);
+  background:
+    linear-gradient(135deg, rgb(201 150 26 / 0.16), rgb(255 250 242 / 0.92)),
+    #fff;
+  box-shadow: 0 10px 24px rgb(36 27 19 / 0.08);
+  color: var(--portal-ink);
+  transform: translateY(-1px);
+}
+
+.document-choice-grid button.active::before {
+  content: "";
+  display: inline-block;
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 999px;
+  background: var(--portal-gold);
+  box-shadow: 0 0 0 4px rgb(201 150 26 / 0.12);
+  margin-right: 0.42rem;
+  vertical-align: 0.05rem;
+}
+
 .document-request-form .btn {
   grid-column: 1 / -1;
   justify-content: center;
@@ -2967,6 +3013,10 @@ body[data-private-portal="true"] .portal-quote-actions {
 
   .document-command-panel,
   .document-request-form {
+    grid-template-columns: 1fr;
+  }
+
+  .document-choice-grid {
     grid-template-columns: 1fr;
   }
 }
