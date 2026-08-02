@@ -1195,6 +1195,8 @@ window.KridiyaAuth = (function () {
         const activeCompany = companies[0];
         const bookings = await KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id);
         const quotes = await KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id).catch(function () { return []; });
+        gate.hidden = true;
+        app.hidden = false;
         renderCorporatePortal(companies, bookings, activeCompany, quotes);
         renderCorporateQuotes(quotes, activeCompany);
         loadCorporatePortalDetails(bookings, activeCompany);
@@ -1230,9 +1232,9 @@ window.KridiyaAuth = (function () {
             initCorporateDocumentRequest(activeCompany, freshBookings);
           });
         });
-        gate.hidden = true;
-        app.hidden = false;
       } catch (err) {
+        gate.hidden = false;
+        app.hidden = true;
         gate.innerHTML = '<div class="form-banner error" role="alert">Could not load corporate portal yet: ' + KridiyaAuth.escapeHTML(errorMessage(err, "Please refresh and try again.")) + "</div>";
       }
       const logout = document.getElementById("corp-logout-btn");
@@ -2069,18 +2071,6 @@ window.KridiyaAuth = (function () {
       form.innerHTML = '<div class="vault-empty compact"><span>Document request</span><b>Request access is not enabled</b><p>Ask Kridiya corporate desk to enable request permission for this portal login.</p></div>';
       return;
     }
-    const documentTypeInput = form.document_type;
-    const documentTypeButtons = Array.from(form.querySelectorAll("[data-document-type]"));
-    documentTypeButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        documentTypeButtons.forEach(function (item) {
-          item.classList.toggle("active", item === button);
-          item.setAttribute("aria-pressed", item === button ? "true" : "false");
-        });
-        documentTypeInput.value = button.dataset.documentType || "";
-        banner(form, "");
-      });
-    });
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!validateForm(form)) return;
@@ -2107,10 +2097,6 @@ window.KridiyaAuth = (function () {
           ].filter(Boolean).join("\n")
         });
         form.reset();
-        documentTypeButtons.forEach(function (button) {
-          button.classList.remove("active");
-          button.setAttribute("aria-pressed", "false");
-        });
         if (typeof refresh === "function") await refresh();
         toast("Document request sent to Kridiya admin.");
       } catch (err) {

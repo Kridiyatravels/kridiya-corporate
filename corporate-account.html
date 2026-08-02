@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="assets/favicon-180.png">
 <link rel="canonical" href="https://corporate.kridiyatravel.com/corporate-account.html">
 <link rel="stylesheet" href="css/corporate.css">
-  <link rel="stylesheet" href="css/corporate-portal.css?v=20260802a">
+  <link rel="stylesheet" href="css/corporate-portal.css?v=20260802b">
 </head>
 <body data-page="corporate-account" data-private-portal="true">
 <header class="portal-app-topbar">
@@ -275,18 +275,18 @@
                       <option value="">Choose booking...</option>
                     </select>
                   </div>
-                  <div class="field document-choice-field">
+                  <div class="field">
                     <label for="corp-doc-type">DOCUMENT NEEDED</label>
-                    <input id="corp-doc-type" name="document_type" type="hidden" required>
-                    <div class="document-choice-grid" role="group" aria-label="Document needed">
-                      <button type="button" data-document-type="Ticket / PNR">Ticket / PNR</button>
-                      <button type="button" data-document-type="Hotel voucher">Hotel voucher</button>
-                      <button type="button" data-document-type="Visa document">Visa document</button>
-                      <button type="button" data-document-type="Insurance policy">Insurance policy</button>
-                      <button type="button" data-document-type="Receipt / invoice">Receipt / invoice</button>
-                      <button type="button" data-document-type="Monthly statement">Monthly statement</button>
-                      <button type="button" data-document-type="Other document">Other document</button>
-                    </div>
+                    <select id="corp-doc-type" name="document_type" required>
+                      <option value="">Choose document...</option>
+                      <option value="Ticket / PNR">Ticket / PNR</option>
+                      <option value="Hotel voucher">Hotel voucher</option>
+                      <option value="Visa document">Visa document</option>
+                      <option value="Insurance policy">Insurance policy</option>
+                      <option value="Receipt / invoice">Receipt / invoice</option>
+                      <option value="Monthly statement">Monthly statement</option>
+                      <option value="Other document">Other document</option>
+                    </select>
                   </div>
                   <div class="field document-request-note">
                     <label for="corp-doc-note">NOTE</label>
@@ -379,6 +379,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260802a" defer></script>
+  <script src="js/auth.js?v=20260802b" defer></script>
 </body>
 </html>
