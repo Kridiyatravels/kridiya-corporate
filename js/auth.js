@@ -272,7 +272,7 @@ window.KridiyaAuth = (function () {
     const sb = await client();
     const result = await sb
       .from("booking_documents")
-      .select("id, booking_id, document_type, file_name, storage_path, external_reference, visible_to_customer, created_at")
+      .select("id, booking_id, document_type, file_name, storage_path, storage_provider, external_reference, visible_to_customer, created_at")
       .eq("user_id", user.id)
       .eq("visible_to_customer", true)
       .order("created_at", { ascending: false });
@@ -295,7 +295,7 @@ window.KridiyaAuth = (function () {
     if (result.error) return [];
     return result.data || [];
   }
-  async function openBookingDocument(documentId, storagePath) {
+  async function openBookingDocument(documentId, storagePath, storageProvider) {
     const user = await currentUser();
     if (!user) throw new Error("Please log in again.");
     if (!documentId || !storagePath) throw new Error("This document does not have a downloadable file yet.");
@@ -310,6 +310,30 @@ window.KridiyaAuth = (function () {
     if (check.error || !check.data || check.data.storage_path !== storagePath) {
       throw new Error("This document is not available for your account.");
     }
+    if (storageProvider === "microsoft") {
+      const sessionResult = await sb.auth.getSession();
+      const token = sessionResult.data && sessionResult.data.session && sessionResult.data.session.access_token;
+      if (!token) throw new Error("Please log in again.");
+      const response = await fetch(SUPABASE_URL + "/functions/v1/microsoft-documents", {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token, apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "download_booking_document", document_id: documentId })
+      });
+      if (!response.ok) {
+        const failure = await response.json().catch(function () { return {}; });
+        throw new Error(failure.error || "Could not prepare document download.");
+      }
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = "";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 30000);
+      return;
+    }
     const result = await sb.storage.from("booking-documents").createSignedUrl(storagePath, 300, { download: true });
     if (result.error || !result.data || !result.data.signedUrl) {
       throw new Error(result.error ? result.error.message : "Could not prepare document download.");
@@ -317,7 +341,7 @@ window.KridiyaAuth = (function () {
     window.open(result.data.signedUrl, "_blank", "noopener");
   }
 
-  async function openCorporateBookingDocument(bookingId, documentId, storagePath) {
+  async function openCorporateBookingDocument(bookingId, documentId, storagePath, storageProvider) {
     const user = await currentUser();
     if (!user) throw new Error("Please log in again.");
     if (!bookingId || !documentId || !storagePath) throw new Error("This corporate document is not downloadable yet.");
@@ -328,6 +352,34 @@ window.KridiyaAuth = (function () {
     });
     if (!allowed) throw new Error("This document is not released to your corporate portal.");
     const sb = await client();
+    if (storageProvider === "microsoft") {
+      const sessionResult = await sb.auth.getSession();
+      const token = sessionResult.data && sessionResult.data.session && sessionResult.data.session.access_token;
+      if (!token) throw new Error("Please log in again.");
+      const response = await fetch(SUPABASE_URL + "/functions/v1/microsoft-documents", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token,
+          apikey: SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ action: "download_booking_document", document_id: documentId })
+      });
+      if (!response.ok) {
+        const failure = await response.json().catch(function () { return {}; });
+        throw new Error(failure.error || "Could not prepare document download.");
+      }
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = "";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 30000);
+      return;
+    }
     const result = await sb.storage.from("booking-documents").createSignedUrl(storagePath, 300, { download: true });
     if (result.error || !result.data || !result.data.signedUrl) {
       throw new Error(result.error ? result.error.message : "Could not prepare document download.");
@@ -908,7 +960,7 @@ window.KridiyaAuth = (function () {
         '<span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(d.document_type || view.label)) + (created ? " / " + KridiyaAuth.escapeHTML(created) : "") + '</span>' +
         (d.external_reference ? '<small>Reference: ' + KridiyaAuth.escapeHTML(d.external_reference) + '</small>' : '') + '</div>' +
         (d.storage_path
-          ? '<button class="btn btn-outline btn-sm customer-doc-download" type="button" data-document-id="' + KridiyaAuth.escapeHTML(d.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(d.storage_path) + '">Download</button>'
+          ? '<button class="btn btn-outline btn-sm customer-doc-download" type="button" data-document-id="' + KridiyaAuth.escapeHTML(d.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(d.storage_path) + '" data-storage-provider="' + KridiyaAuth.escapeHTML(d.storage_provider || "supabase") + '">Download</button>'
           : '<span class="customer-row-state">Released</span>') + '</div>';
     }).join("") + "</div>";
   }
@@ -932,7 +984,7 @@ window.KridiyaAuth = (function () {
       const old = btn.textContent;
       btn.textContent = "Preparing...";
       try {
-        await KridiyaAuth.openBookingDocument(btn.dataset.documentId, btn.dataset.storagePath);
+        await KridiyaAuth.openBookingDocument(btn.dataset.documentId, btn.dataset.storagePath, btn.dataset.storageProvider);
       } catch (err) {
         toast(errorMessage(err, "Could not prepare the document."));
       }
@@ -1809,7 +1861,7 @@ window.KridiyaAuth = (function () {
         return '<article class="document-vault-card document-type-' + KridiyaAuth.escapeHTML(view.type) + '">' +
           '<div class="document-vault-main"><i aria-hidden="true"></i><div><small>' + KridiyaAuth.escapeHTML(view.label || docType) + '</small><b>' + KridiyaAuth.escapeHTML(doc.file_name || docType) + '</b><p>' + KridiyaAuth.escapeHTML(doc.booking_reference || "Corporate booking") + ' / ' + KridiyaAuth.escapeHTML(doc.booking_title || "Travel record") + '</p></div>' +
           (doc.storage_path
-            ? '<button class="btn btn-outline btn-sm corporate-doc-download" type="button" data-booking-id="' + KridiyaAuth.escapeHTML(doc.booking_id || "") + '" data-document-id="' + KridiyaAuth.escapeHTML(doc.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(doc.storage_path) + '">Download</button>'
+            ? '<button class="btn btn-outline btn-sm corporate-doc-download" type="button" data-booking-id="' + KridiyaAuth.escapeHTML(doc.booking_id || "") + '" data-document-id="' + KridiyaAuth.escapeHTML(doc.id) + '" data-storage-path="' + KridiyaAuth.escapeHTML(doc.storage_path) + '" data-storage-provider="' + KridiyaAuth.escapeHTML(doc.storage_provider || (String(doc.storage_path).indexOf("Kridiya Business/") === 0 ? "microsoft" : "supabase")) + '">Download</button>'
             : '<span>Pending file</span>') + '</div>' +
           '<div class="document-vault-meta"><span>Released</span><b>' + KridiyaAuth.escapeHTML(released) + '</b><span>Access</span><b>Company portal</b></div>' +
         '</article>';
@@ -1899,7 +1951,7 @@ window.KridiyaAuth = (function () {
       btn.disabled = true;
       btn.textContent = "Preparing...";
       try {
-        await KridiyaAuth.openCorporateBookingDocument(btn.dataset.bookingId, btn.dataset.documentId, btn.dataset.storagePath);
+        await KridiyaAuth.openCorporateBookingDocument(btn.dataset.bookingId, btn.dataset.documentId, btn.dataset.storagePath, btn.dataset.storageProvider);
       } catch (err) {
         toast(errorMessage(err, "Could not prepare this corporate document."));
       }
