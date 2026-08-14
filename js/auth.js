@@ -2104,6 +2104,7 @@ window.KridiyaAuth = (function () {
     const form = document.getElementById("corp-document-request-form");
     if (!form) return;
     const bookingSelect = form.booking_id;
+    const hasBookings = Array.isArray(bookings) && bookings.length > 0;
     if (bookingSelect) {
       const currentValue = bookingSelect.value;
       bookingSelect.innerHTML = '<option value="">Choose booking...</option>' + (bookings || []).map(function (booking) {
@@ -2113,10 +2114,16 @@ window.KridiyaAuth = (function () {
         ].filter(Boolean).join(" - ");
         return '<option value="' + KridiyaAuth.escapeHTML(booking.id || "") + '" data-reference="' + KridiyaAuth.escapeHTML(booking.booking_reference || "") + '" data-title="' + KridiyaAuth.escapeHTML(booking.title || "") + '" data-route="' + KridiyaAuth.escapeHTML(booking.route_or_destination || "") + '">' + KridiyaAuth.escapeHTML(label) + '</option>';
       }).join("");
+      if (!hasBookings) {
+        bookingSelect.innerHTML = '<option value="">No company bookings available yet</option>';
+      }
       if (currentValue && Array.from(bookingSelect.options).some(function (option) { return option.value === currentValue; })) {
         bookingSelect.value = currentValue;
       }
+      bookingSelect.disabled = !hasBookings;
     }
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = !hasBookings;
     if (form.dataset.ready === "true") return;
     form.dataset.ready = "true";
     if (!activeCompany.can_request) {
@@ -2126,6 +2133,11 @@ window.KridiyaAuth = (function () {
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
       if (!validateForm(form)) return;
+      if (!form.booking_id || !form.booking_id.value) {
+        banner(form, "Choose the original booking before requesting a document.", "error");
+        if (form.booking_id) form.booking_id.focus();
+        return;
+      }
       const selected = form.booking_id.options[form.booking_id.selectedIndex];
       const bookingReference = selected ? selected.dataset.reference : "";
       const bookingTitle = selected ? selected.dataset.title : "";
