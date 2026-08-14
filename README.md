@@ -14,6 +14,8 @@ This is the separate corporate front door for Kridiya Travel and Tourism FZ-LLC.
 - `booking.html`: public corporate request intake
 - `portal.html`: approved portal explainer
 - `login.html`: Supabase Auth login
+- `forgot-password.html`: Supabase password reset request
+- `reset-password.html`: secure password update landing page
 - `corporate-account.html`: private company portal
 - `contact.html`: Corporate Desk contact page
 
@@ -27,6 +29,10 @@ Corporate site
 -> company portal login
 -> portal requests/bookings/quotes/documents/finance
 ```
+
+Admin source is maintained separately at:
+
+`C:\Users\Who\kridiya-admin`
 
 ## Hosting
 
@@ -62,3 +68,7 @@ See [MANUAL.md](MANUAL.md) for setup, operating procedure, approval SQL, permiss
 Admin approval button implementation notes:
 
 [docs/admin-approval-implementation.md](docs/admin-approval-implementation.md)
+
+Production hardening checklist:
+
+[docs/production-hardening.md](docs/production-hardening.md)

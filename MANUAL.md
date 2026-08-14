@@ -25,6 +25,8 @@ Public pages:
 - `portal.html`: public portal explainer and login preview
 - `contact.html`: Corporate Desk contact page
 - `login.html`: approved portal user sign-in
+- `forgot-password.html`: password reset request
+- `reset-password.html`: password update landing page
 - `thanks.html`: fallback thank-you page
 
 Private approved-company portal:
@@ -99,6 +101,8 @@ Auth URL allow list should include:
 https://corporate.kridiyatravel.com
 https://corporate.kridiyatravel.com/login.html
 https://corporate.kridiyatravel.com/corporate-account.html
+https://corporate.kridiyatravel.com/forgot-password.html
+https://corporate.kridiyatravel.com/reset-password.html
 ```
 
 Required database objects already used by the portal:
@@ -220,22 +224,29 @@ Approved company user must not see:
 - Supabase/admin controls
 - Service role keys
 
-## Admin Side Still Needed
+## Admin Side Built
 
-Highest priority future admin features:
+Admin source:
 
-1. Add `Approve corporate portal account` button in admin enquiry view.
-2. Add staff UI to link/unlink Auth users to corporate accounts.
-3. Add role selector: travel coordinator, approver, finance, viewer.
-4. Add quote release controls for portal visibility.
-5. Add document release controls for portal downloads.
-6. Add monthly statement PDF/CSV export.
-7. Add notification email when a portal request is submitted.
-8. Add corporate filters: applications, active accounts, quote pending, payment pending, documents pending, LPO required.
-9. Add audit log: login, request submitted, quote approved, document downloaded.
-10. Add account health panel: missing billing email, missing authorized contact, inactive user, unpaid requests.
+`C:\Users\Who\kridiya-admin`
 
-Important: the current workspace does not contain the real admin source code. To build the admin approval button and admin screens, the actual admin app/source repo must be available locally or shared.
+Admin features now connected:
+
+- Corporate accounts workspace and command center
+- Portal request visibility inside bookings
+- Quote release to corporate portal
+- Quote accept/decline status from company portal
+- Payment/LPO handoff controls
+- Document request intake from corporate portal
+- Customer-safe document release controls
+- Corporate portal access permissions for request, quote approval, documents, and finance
+- Monthly statement handoff summary
+
+Still external/manual until server credentials are supplied:
+
+- Fully automated email sending from `corporate@kridiyatravel.com`
+- One-click server-side Supabase Auth user creation
+- Supabase Auth SMTP/template configuration
 
 Admin approval implementation guide:
 
@@ -261,6 +272,8 @@ Before calling the system ready after changes:
 - Confirm request appears in admin bookings
 - Confirm company portal shows bookings
 - Confirm quote/document/finance views do not expose supplier/private data
+- Request password reset from `forgot-password.html`
+- Open the Supabase reset link and set a new password from `reset-password.html`
 - Test mobile width around 375px
 
 ## Git Commands
@@ -286,3 +299,7 @@ preview-server.cjs
 ```
 
 Leave it alone unless intentionally adding local preview tooling.
+
+## Production Hardening
+
+Use `docs/production-hardening.md` before final launch and after every major database change.

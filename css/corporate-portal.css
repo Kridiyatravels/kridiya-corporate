@@ -3156,6 +3156,60 @@ body[data-private-portal="true"] .portal-support-link {
 }
 
 @media (max-width: 860px) {
+  body[data-private-portal="true"] .portal-app {
+    display: block;
+  }
+
+  body[data-private-portal="true"] .portal-app-topbar {
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.75rem 1rem;
+  }
+
+  body[data-private-portal="true"] .portal-app-brand img {
+    width: 46px;
+  }
+
+  body[data-private-portal="true"] .portal-app-brand span b {
+    font-size: 0.98rem;
+  }
+
+  body[data-private-portal="true"] .portal-app-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  body[data-private-portal="true"] .portal-app-actions .btn {
+    min-height: 42px;
+    padding-inline: 0.9rem;
+  }
+
+  body[data-private-portal="true"] .portal-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    border-right: 0;
+    border-bottom: 1px solid var(--portal-line);
+    box-shadow: 0 10px 24px rgb(36 27 19 / 0.08);
+  }
+
+  body[data-private-portal="true"] .portal-company-mini {
+    margin: 0.75rem;
+  }
+
+  body[data-private-portal="true"] .portal-sidebar nav {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding: 0 0.75rem 0.8rem;
+  }
+
+  body[data-private-portal="true"] .portal-sidebar nav a {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 0.7rem 0.85rem;
+  }
+
   body[data-private-portal="true"] .portal-app-main {
     padding: 0.8rem;
   }
@@ -3164,13 +3218,81 @@ body[data-private-portal="true"] .portal-support-link {
     font-size: 2.3rem;
   }
 
+  body[data-private-portal="true"] .portal-app-hero > div:first-child {
+    padding: 1.2rem;
+  }
+
+  body[data-private-portal="true"] .portal-status-panel b {
+    font-size: 1.55rem;
+  }
+
   body[data-private-portal="true"] .portal-live-strip,
   body[data-private-portal="true"] .portal-metrics,
   body[data-private-portal="true"] .portal-control-strip {
     grid-template-columns: 1fr;
   }
 
+  body[data-private-portal="true"] .portal-workspace-head {
+    align-items: flex-start;
+  }
+
+  body[data-private-portal="true"] .portal-workspace-head .btn {
+    width: 100%;
+  }
+
+  body[data-private-portal="true"] .portal-tabs {
+    padding-inline: 0.65rem;
+  }
+
+  body[data-private-portal="true"] .portal-tab-panel {
+    padding: 0.85rem;
+  }
+
+  body[data-private-portal="true"] .portal-record,
+  body[data-private-portal="true"] .portal-panel {
+    padding: 1rem;
+  }
+
+  body[data-private-portal="true"] .document-request-form .doc-type-grid,
+  body[data-private-portal="true"] .portal-request-grid,
+  body[data-private-portal="true"] .statement-grid,
+  body[data-private-portal="true"] .quote-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
   .corporate-booking-timeline {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  body[data-private-portal="true"] .portal-app-main {
+    padding: 0.55rem;
+  }
+
+  body[data-private-portal="true"] .portal-app-hero h1 {
+    font-size: 1.95rem;
+  }
+
+  body[data-private-portal="true"] .portal-app-hero p,
+  body[data-private-portal="true"] .portal-workspace-head p {
+    font-size: 0.95rem;
+  }
+
+  body[data-private-portal="true"] .portal-metrics span {
+    font-size: 2rem;
+  }
+
+  body[data-private-portal="true"] .portal-record-actions,
+  body[data-private-portal="true"] .quote-actions,
+  body[data-private-portal="true"] .statement-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  body[data-private-portal="true"] .portal-record-actions .btn,
+  body[data-private-portal="true"] .quote-actions .btn,
+  body[data-private-portal="true"] .statement-actions .btn {
+    width: 100%;
   }
 }
