@@ -529,6 +529,20 @@ window.KridiyaAuth = (function () {
     return result.data;
   }
 
+  async function listMyCorporateDeskCases(corporateAccountId) {
+    const sb = await client();
+    const result = await sb.rpc("list_my_corporate_desk_cases", { p_corporate_account_id: corporateAccountId, p_limit: 100 });
+    if (result.error) throw result.error;
+    return result.data || [];
+  }
+
+  async function createMyCorporateDeskCase(payload) {
+    const sb = await client();
+    const result = await sb.rpc("create_my_corporate_desk_case", { p_corporate_account_id: payload.corporateAccountId, p_category: payload.category, p_urgency: payload.urgency, p_subject: payload.subject, p_description: payload.description, p_booking_id: payload.bookingId || null });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
   function getUser(email) {
     const cached = session();
     if (!cached) return null;
@@ -594,6 +608,8 @@ window.KridiyaAuth = (function () {
     respondMyCorporateQuote: respondMyCorporateQuote,
     getMyCorporateBookingDetail: getMyCorporateBookingDetail,
     createMyCorporateRequest: createMyCorporateRequest,
+    listMyCorporateDeskCases: listMyCorporateDeskCases,
+    createMyCorporateDeskCase: createMyCorporateDeskCase,
     passwordIssue: passwordIssue,
     passwordStrength: passwordStrength,
     escapeHTML: escapeHTML,
@@ -1284,6 +1300,7 @@ window.KridiyaAuth = (function () {
             initCorporateDocumentRequest(activeCompany, freshBookings);
           });
         });
+        initCorporateDeskCases(activeCompany);
       } catch (err) {
         gate.hidden = false;
         app.hidden = true;
@@ -1296,6 +1313,25 @@ window.KridiyaAuth = (function () {
           location.href = "login.html?next=corporate-account.html";
         });
       }
+    });
+  }
+
+  function initCorporateDeskCases(activeCompany) {
+    const form = document.getElementById("corp-desk-case-form");
+    const list = document.getElementById("corp-desk-case-list");
+    if (!form || !list) return;
+    async function load() {
+      const cases = await KridiyaAuth.listMyCorporateDeskCases(activeCompany.corporate_account_id);
+      list.innerHTML = cases.length ? cases.map(function (item) {
+        return '<article class="portal-record-card"><div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.category)) + ' / ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.urgency)) + '</span><b>' + KridiyaAuth.escapeHTML(item.subject) + '</b><p>' + KridiyaAuth.escapeHTML(item.description) + '</p>' + (item.staff_response ? '<p><b>Kridiya response:</b> ' + KridiyaAuth.escapeHTML(item.staff_response) + '</p>' : '') + '</div><span class="status-chip">' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.status)) + '</span></article>';
+      }).join('') : '<div class="portal-empty">No tracked Corporate Desk cases yet.</div>';
+    }
+    load().catch(function (err) { list.innerHTML = '<div class="form-banner error">' + KridiyaAuth.escapeHTML(errorMessage(err,"Could not load Corporate Desk cases.")) + '</div>'; });
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault(); if (!validateForm(form)) return; banner(form, ""); busy(form, true, "Opening...");
+      try { await KridiyaAuth.createMyCorporateDeskCase({ corporateAccountId: activeCompany.corporate_account_id, category: form.category.value, urgency: form.urgency.value, subject: form.subject.value.trim(), description: form.description.value.trim() }); form.reset(); await load(); toast("Corporate Desk case opened and assigned to Kridiya."); }
+      catch (err) { banner(form, errorMessage(err,"Could not open the case."), "error"); }
+      busy(form, false);
     });
   }
 

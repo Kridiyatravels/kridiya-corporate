@@ -340,6 +340,20 @@
                   <button class="btn btn-outline" type="button" data-portal-tab-open="request">New request</button>
                 </div>
               </div>
+              <div class="portal-panel">
+                <div class="portal-panel-head"><div><span>Tracked company case</span><h3>Open a Corporate Desk case</h3></div></div>
+                <form id="corp-desk-case-form" class="form-grid" novalidate>
+                  <div class="form-banner" hidden></div>
+                  <div class="field-row">
+                    <div class="field col-3"><label>CATEGORY</label><select name="category" required><option value="">Choose...</option><option value="amendment">Amendment</option><option value="cancellation">Cancellation</option><option value="document">Document</option><option value="finance">Finance / LPO</option><option value="complaint">Complaint</option><option value="emergency">Emergency</option><option value="other">Other</option></select></div>
+                    <div class="field col-3"><label>URGENCY</label><select name="urgency" required><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="emergency">Emergency</option></select></div>
+                    <div class="field col-6"><label>SUBJECT</label><input name="subject" minlength="3" maxlength="180" required></div>
+                    <div class="field"><label>DETAILS</label><textarea name="description" minlength="10" maxlength="4000" required placeholder="Reference, traveller, deadline, requested action, and approval owner..."></textarea></div>
+                  </div>
+                  <button class="btn btn-primary" type="submit" data-label="Open case">Open tracked case</button>
+                </form>
+                <div id="corp-desk-case-list" class="portal-record-list"></div>
+              </div>
               <div class="portal-desk-grid">
                 <article>
                   <span>Urgent change</span>
@@ -379,6 +393,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260802c" defer></script>
+  <script src="js/auth.js?v=20260815a" defer></script>
 </body>
 </html>
