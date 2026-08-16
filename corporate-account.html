@@ -273,6 +273,8 @@
                   <div class="field col-4"><label>PASSPORT EXPIRY</label><input name="passport_expiry" type="date"></div>
                   <div class="field col-4"><label>COMPANY NOTE</label><input name="notes" maxlength="500"></div>
                 </div><button class="btn btn-primary" type="submit" data-label="Save traveller">Save traveller</button> <button class="btn btn-outline" type="reset">Clear</button></form>
+                <div class="portal-panel-head"><div><span>Controlled CSV import</span><h3>Import up to 100 travellers atomically</h3><p>Use the template headers exactly. If any row fails validation, no rows are imported.</p></div></div>
+                <div class="field-row"><div class="field col-8"><label for="corp-traveller-csv">TRAVELLER CSV</label><input id="corp-traveller-csv" type="file" accept=".csv,text/csv"></div><div class="field col-4"><label>ACTIONS</label><button class="btn btn-primary" id="corp-traveller-import" type="button">Import CSV</button> <button class="btn btn-outline" id="corp-traveller-template" type="button">Download template</button></div></div>
                 <div id="corp-traveller-list" class="portal-record-list"></div>
               </div>
               <div class="portal-panel"><div class="portal-panel-head"><div><span>Company structure</span><h3>Approved branches</h3></div></div><div id="corp-branch-list" class="portal-record-list"></div></div>
@@ -424,6 +426,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260816h" defer></script>
+  <script src="js/auth.js?v=20260816i" defer></script>
 </body>
 </html>
