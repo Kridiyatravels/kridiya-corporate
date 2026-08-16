@@ -514,6 +514,18 @@ window.KridiyaAuth = (function () {
     return result.data;
   }
 
+  async function requestMyCorporateQuoteRevision(quoteId, message) {
+    const user = await currentUser();
+    if (!user) throw new Error("Please log in again.");
+    const sb = await client();
+    const result = await sb.rpc("request_my_corporate_quote_revision", {
+      p_quote_id: quoteId,
+      p_message: message
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
   async function getMyCorporateBookingDetail(bookingId) {
     const user = await currentUser();
     if (!user || !bookingId) return null;
@@ -627,6 +639,7 @@ window.KridiyaAuth = (function () {
     listMyCorporateBookings: listMyCorporateBookings,
     listMyCorporateQuotes: listMyCorporateQuotes,
     respondMyCorporateQuote: respondMyCorporateQuote,
+    requestMyCorporateQuoteRevision: requestMyCorporateQuoteRevision,
     getMyCorporateBookingDetail: getMyCorporateBookingDetail,
     createMyCorporateRequest: createMyCorporateRequest,
     listMyCorporateDeskCases: listMyCorporateDeskCases,
@@ -1784,7 +1797,8 @@ window.KridiyaAuth = (function () {
     '</div>' + quotes.map(function (quote) {
       const status = String(quote.status || "sent");
       const alreadyActed = !!quote.my_approval_decision;
-      const canAct = !!activeCompany.can_approve_quotes && status === "sent" && !alreadyActed;
+      const revisionPending = !!quote.revision_pending;
+      const canAct = !!activeCompany.can_approve_quotes && status === "sent" && !alreadyActed && !revisionPending;
       const validUntil = quote.valid_until
         ? new Date(quote.valid_until).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
         : "No expiry set";
@@ -1795,13 +1809,17 @@ window.KridiyaAuth = (function () {
       const bookingTitle = quote.booking_title || "Corporate booking";
       const service = KridiyaAuth.statusLabel(quote.service_type || "corporate");
       const statusTone = status === "accepted" ? "is-accepted" : status === "declined" ? "is-declined" : "is-sent";
-      const approvalLabel = status === "accepted" ? "Accepted" : status === "declined" ? "Declined" : alreadyActed
+      const approvalLabel = status === "accepted" ? "Accepted" : status === "declined" ? "Declined" : status === "expired" ? "Expired" : revisionPending ? "Revision requested" : alreadyActed
         ? "Approval " + String(quote.approval_count || 1) + " of " + String(quote.required_approvals || 2)
         : canAct ? "Action needed" : "View only";
       const responseNote = status === "accepted"
         ? "Quote accepted. Kridiya will continue with payment/LPO control and supplier confirmation."
         : status === "declined"
           ? "Quote declined. Kridiya has been notified and can prepare another option if required."
+          : status === "expired"
+            ? "This option has expired. Request a fresh quote from the Kridiya corporate desk."
+            : revisionPending
+              ? "Your revision request is open with Kridiya Corporate Desk. Approval is paused until a revised option is released."
           : alreadyActed
             ? "Your decision is recorded. A different authorized approver must complete this quote."
             : "This login can view quotes only. Contact Kridiya corporate desk if approval access is required.";
@@ -1818,7 +1836,7 @@ window.KridiyaAuth = (function () {
           '<div><span>Approval</span><b>' + KridiyaAuth.escapeHTML(approvalLabel) + '</b></div>' +
         '</div>' +
         '<div class="portal-quote-terms"><span>Commercial notes</span><p>' + KridiyaAuth.escapeHTML(quote.terms || "Final booking is completed after company confirmation, payment/LPO clearance, and supplier availability check.") + '</p></div>' +
-        (canAct ? '<div class="portal-quote-actions"><button class="btn btn-primary" type="button" data-quote-action="accepted">Accept quote</button><button class="btn btn-outline" type="button" data-quote-action="declined">Decline option</button></div>' : '<div class="quote-view-note">' + KridiyaAuth.escapeHTML(responseNote) + '</div>') +
+        (canAct ? '<div class="portal-quote-actions"><button class="btn btn-primary" type="button" data-quote-action="accepted">Accept quote</button><button class="btn btn-outline" type="button" data-quote-action="revision">Request revision</button><button class="btn btn-outline" type="button" data-quote-action="declined">Decline option</button></div>' : '<div class="quote-view-note">' + KridiyaAuth.escapeHTML(responseNote) + '</div>') +
       '</article>';
     }).join("");
 
@@ -1830,6 +1848,18 @@ window.KridiyaAuth = (function () {
         const buttons = Array.from(card.querySelectorAll("button"));
         buttons.forEach(function (btn) { btn.disabled = true; });
         try {
+          if (status === "revision") {
+            const message = window.prompt("What should Kridiya change? Include dates, route, traveller, budget, or option preferences.", "");
+            if (message === null) {
+              buttons.forEach(function (btn) { btn.disabled = false; });
+              return;
+            }
+            await KridiyaAuth.requestMyCorporateQuoteRevision(card.dataset.quoteId, message);
+            toast("Revision request sent to Kridiya Corporate Desk.");
+            const revisedQuotes = await KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id);
+            renderCorporateQuotes(revisedQuotes, activeCompany);
+            return;
+          }
           const decision = await KridiyaAuth.respondMyCorporateQuote(card.dataset.quoteId, status);
           if (status === "accepted" && !decision.finalized) {
             card.querySelector(".portal-quote-actions").innerHTML = '<div class="quote-view-note">Approval '+KridiyaAuth.escapeHTML(decision.approval_count)+' of '+KridiyaAuth.escapeHTML(decision.required_approvals)+' recorded. A different authorized approver must complete this quote.</div>';
