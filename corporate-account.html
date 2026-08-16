@@ -320,6 +320,15 @@
             </div>
 
             <div class="portal-tab-panel" data-portal-panel="finance">
+              <div class="portal-panel"><div class="portal-panel-head"><div><span>Secure finance handoff</span><h3>Submit payment proof or LPO</h3></div></div>
+                <form id="corp-finance-evidence-form" class="form-grid" novalidate><div class="form-banner" hidden></div><div class="field-row">
+                  <div class="field col-4"><label>BOOKING</label><select name="booking_id" required><option value="">Choose booking...</option></select></div>
+                  <div class="field col-3"><label>EVIDENCE TYPE</label><select name="evidence_type" required><option value="payment_proof">Payment proof</option><option value="lpo">Approved LPO</option></select></div>
+                  <div class="field col-3"><label>REFERENCE</label><input name="reference" maxlength="180" placeholder="Transfer or LPO number"></div>
+                  <div class="field col-2"><label>FILE</label><input name="file" type="file" accept="application/pdf,image/jpeg,image/png" required></div>
+                </div><button class="btn btn-primary" type="submit" data-label="Submit evidence">Submit securely</button></form>
+                <div id="corp-finance-evidence-list" class="portal-record-list"></div>
+              </div>
               <div id="corp-payment-list" class="portal-record-list"></div>
               <div class="portal-placeholder-grid">
                 <article><b>Payment status</b><p>Track payment request, proof received, verified, receipt issued, refund pending, or completed status.</p></article>
@@ -409,6 +418,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260816a" defer></script>
+  <script src="js/auth.js?v=20260816b" defer></script>
 </body>
 </html>

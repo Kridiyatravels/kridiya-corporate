@@ -546,6 +546,8 @@ window.KridiyaAuth = (function () {
   async function listMyCorporateTravellers(corporateAccountId) { const sb=await client(); const r=await sb.rpc("list_my_corporate_travellers",{p_corporate_account_id:corporateAccountId}); if(r.error)throw r.error; return r.data||[]; }
   async function saveMyCorporateTraveller(payload) { const sb=await client(); const r=await sb.rpc("save_my_corporate_traveller",{p_corporate_account_id:payload.corporateAccountId,p_traveller_id:payload.id||null,p_full_name:payload.fullName,p_date_of_birth:payload.dateOfBirth||null,p_nationality:payload.nationality||null,p_passport_number:payload.passportNumber||null,p_passport_expiry:payload.passportExpiry||null,p_notes:payload.notes||null,p_expected_updated_at:payload.expectedUpdatedAt||null}); if(r.error)throw r.error; return r.data; }
   async function archiveMyCorporateTraveller(corporateAccountId,id,updatedAt) { const sb=await client(); const r=await sb.rpc("archive_my_corporate_traveller",{p_corporate_account_id:corporateAccountId,p_traveller_id:id,p_expected_updated_at:updatedAt}); if(r.error)throw r.error; }
+  async function listMyCorporateFinanceEvidence(corporateAccountId) { const sb=await client(); const r=await sb.rpc("list_my_corporate_finance_evidence",{p_corporate_account_id:corporateAccountId}); if(r.error)throw r.error; return r.data||[]; }
+  async function submitMyCorporateFinanceEvidence(payload) { const sb=await client(),user=await currentUser(); if(!user)throw new Error("Please log in again."); const ext=(payload.file.name.split(".").pop()||"file").replace(/[^a-z0-9]/gi,"").toLowerCase(),token=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)),path=user.id+"/"+payload.bookingId+"/"+token+"."+ext; const upload=await sb.storage.from("corporate-finance-evidence").upload(path,payload.file,{upsert:false,contentType:payload.file.type}); if(upload.error)throw upload.error; const r=await sb.rpc("attach_my_corporate_finance_evidence",{p_corporate_account_id:payload.corporateAccountId,p_booking_id:payload.bookingId,p_evidence_type:payload.evidenceType,p_reference:payload.reference||null,p_storage_path:path,p_file_name:payload.file.name,p_mime_type:payload.file.type,p_size_bytes:payload.file.size}); if(r.error){await sb.storage.from("corporate-finance-evidence").remove([path]);throw r.error;} return r.data; }
 
   function getUser(email) {
     const cached = session();
@@ -617,6 +619,8 @@ window.KridiyaAuth = (function () {
     listMyCorporateTravellers: listMyCorporateTravellers,
     saveMyCorporateTraveller: saveMyCorporateTraveller,
     archiveMyCorporateTraveller: archiveMyCorporateTraveller,
+    listMyCorporateFinanceEvidence: listMyCorporateFinanceEvidence,
+    submitMyCorporateFinanceEvidence: submitMyCorporateFinanceEvidence,
     passwordIssue: passwordIssue,
     passwordStrength: passwordStrength,
     escapeHTML: escapeHTML,
@@ -1309,6 +1313,7 @@ window.KridiyaAuth = (function () {
         });
         initCorporateDeskCases(activeCompany);
         initCorporateTravellers(activeCompany);
+        initCorporateFinanceEvidence(activeCompany, bookings);
       } catch (err) {
         gate.hidden = false;
         app.hidden = true;
@@ -1349,6 +1354,12 @@ window.KridiyaAuth = (function () {
     load().catch(function(e){list.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(e,"Could not load travellers."))+'</div>';});
     form.addEventListener("submit",async function(e){e.preventDefault();if(!validateForm(form))return;banner(form,"");busy(form,true,"Saving...");try{await KridiyaAuth.saveMyCorporateTraveller({corporateAccountId:activeCompany.corporate_account_id,id:form.traveller_id.value,expectedUpdatedAt:form.expected_updated_at.value,fullName:form.full_name.value.trim(),dateOfBirth:form.date_of_birth.value,nationality:form.nationality.value.trim(),passportNumber:form.passport_number.value.trim(),passportExpiry:form.passport_expiry.value,notes:form.notes.value.trim()});form.reset();await load();toast("Company traveller saved.");}catch(err){banner(form,errorMessage(err,"Could not save traveller."),"error");}busy(form,false);});
     list.addEventListener("click",async function(e){const edit=e.target.closest(".js-edit-traveller"),archive=e.target.closest(".js-archive-traveller"),id=(edit||archive)?.dataset.id,t=travellers.find(function(x){return x.id===id;});if(!t)return;if(edit){form.traveller_id.value=t.id;form.expected_updated_at.value=t.updated_at;form.full_name.value=t.full_name||"";form.date_of_birth.value=t.date_of_birth||"";form.nationality.value=t.nationality||"";form.passport_number.value=t.passport_number||"";form.passport_expiry.value=t.passport_expiry||"";form.notes.value=t.notes||"";form.scrollIntoView({behavior:"smooth"});return;}if(!confirm("Archive this company traveller?"))return;try{await KridiyaAuth.archiveMyCorporateTraveller(activeCompany.corporate_account_id,t.id,t.updated_at);await load();toast("Company traveller archived.");}catch(err){toast(errorMessage(err,"Could not archive traveller."));}});
+  }
+
+  function initCorporateFinanceEvidence(activeCompany,bookings) {
+    const form=document.getElementById("corp-finance-evidence-form"),list=document.getElementById("corp-finance-evidence-list");if(!form||!list)return;form.booking_id.innerHTML='<option value="">Choose booking...</option>'+bookings.map(function(b){return '<option value="'+KridiyaAuth.escapeHTML(b.id)+'">'+KridiyaAuth.escapeHTML((b.booking_reference||"Booking")+" - "+(b.title||b.service_type||"Travel"))+'</option>';}).join('');
+    async function load(){const items=await KridiyaAuth.listMyCorporateFinanceEvidence(activeCompany.corporate_account_id);list.innerHTML=items.length?items.map(function(x){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(x.evidence_type))+'</b><p>'+KridiyaAuth.escapeHTML([x.file_name,x.reference,x.review_note].filter(Boolean).join(" / "))+'</p></div><span class="status-chip">'+KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(x.status))+'</span></article>';}).join(''):'<div class="portal-empty">No finance evidence submitted yet.</div>';}
+    load().catch(function(e){list.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(e,"Could not load finance evidence."))+'</div>';});form.addEventListener("submit",async function(e){e.preventDefault();if(!validateForm(form))return;const file=form.file.files[0];if(!file||file.size>10485760||!["application/pdf","image/jpeg","image/png"].includes(file.type)){banner(form,"Choose a PDF, JPG or PNG no larger than 10 MB.","error");return;}banner(form,"");busy(form,true,"Uploading...");try{await KridiyaAuth.submitMyCorporateFinanceEvidence({corporateAccountId:activeCompany.corporate_account_id,bookingId:form.booking_id.value,evidenceType:form.evidence_type.value,reference:form.reference.value.trim(),file:file});form.reset();await load();toast("Finance evidence submitted for verification.");}catch(err){banner(form,errorMessage(err,"Could not submit evidence."),"error");}busy(form,false);});
   }
 
   function renderCorporatePortal(companies, bookings, activeCompany, quotes) {
