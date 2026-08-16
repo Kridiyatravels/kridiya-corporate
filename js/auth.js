@@ -543,6 +543,10 @@ window.KridiyaAuth = (function () {
     return result.data;
   }
 
+  async function listMyCorporateTravellers(corporateAccountId) { const sb=await client(); const r=await sb.rpc("list_my_corporate_travellers",{p_corporate_account_id:corporateAccountId}); if(r.error)throw r.error; return r.data||[]; }
+  async function saveMyCorporateTraveller(payload) { const sb=await client(); const r=await sb.rpc("save_my_corporate_traveller",{p_corporate_account_id:payload.corporateAccountId,p_traveller_id:payload.id||null,p_full_name:payload.fullName,p_date_of_birth:payload.dateOfBirth||null,p_nationality:payload.nationality||null,p_passport_number:payload.passportNumber||null,p_passport_expiry:payload.passportExpiry||null,p_notes:payload.notes||null,p_expected_updated_at:payload.expectedUpdatedAt||null}); if(r.error)throw r.error; return r.data; }
+  async function archiveMyCorporateTraveller(corporateAccountId,id,updatedAt) { const sb=await client(); const r=await sb.rpc("archive_my_corporate_traveller",{p_corporate_account_id:corporateAccountId,p_traveller_id:id,p_expected_updated_at:updatedAt}); if(r.error)throw r.error; }
+
   function getUser(email) {
     const cached = session();
     if (!cached) return null;
@@ -610,6 +614,9 @@ window.KridiyaAuth = (function () {
     createMyCorporateRequest: createMyCorporateRequest,
     listMyCorporateDeskCases: listMyCorporateDeskCases,
     createMyCorporateDeskCase: createMyCorporateDeskCase,
+    listMyCorporateTravellers: listMyCorporateTravellers,
+    saveMyCorporateTraveller: saveMyCorporateTraveller,
+    archiveMyCorporateTraveller: archiveMyCorporateTraveller,
     passwordIssue: passwordIssue,
     passwordStrength: passwordStrength,
     escapeHTML: escapeHTML,
@@ -1301,6 +1308,7 @@ window.KridiyaAuth = (function () {
           });
         });
         initCorporateDeskCases(activeCompany);
+        initCorporateTravellers(activeCompany);
       } catch (err) {
         gate.hidden = false;
         app.hidden = true;
@@ -1333,6 +1341,14 @@ window.KridiyaAuth = (function () {
       catch (err) { banner(form, errorMessage(err,"Could not open the case."), "error"); }
       busy(form, false);
     });
+  }
+
+  function initCorporateTravellers(activeCompany) {
+    const form=document.getElementById("corp-traveller-form"),list=document.getElementById("corp-traveller-list"); if(!form||!list)return; let travellers=[];
+    async function load(){travellers=await KridiyaAuth.listMyCorporateTravellers(activeCompany.corporate_account_id);list.innerHTML=travellers.length?travellers.map(function(t){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(t.full_name)+'</b><p>'+KridiyaAuth.escapeHTML([t.nationality,t.passport_number,t.passport_expiry?"Expires "+t.passport_expiry:""].filter(Boolean).join(" / "))+'</p></div><div><button class="btn btn-outline btn-sm js-edit-traveller" data-id="'+KridiyaAuth.escapeHTML(t.id)+'" type="button">Edit</button> <button class="btn btn-outline btn-sm js-archive-traveller" data-id="'+KridiyaAuth.escapeHTML(t.id)+'" type="button">Archive</button></div></article>';}).join(''):'<div class="portal-empty">No company travellers saved yet.</div>';}
+    load().catch(function(e){list.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(e,"Could not load travellers."))+'</div>';});
+    form.addEventListener("submit",async function(e){e.preventDefault();if(!validateForm(form))return;banner(form,"");busy(form,true,"Saving...");try{await KridiyaAuth.saveMyCorporateTraveller({corporateAccountId:activeCompany.corporate_account_id,id:form.traveller_id.value,expectedUpdatedAt:form.expected_updated_at.value,fullName:form.full_name.value.trim(),dateOfBirth:form.date_of_birth.value,nationality:form.nationality.value.trim(),passportNumber:form.passport_number.value.trim(),passportExpiry:form.passport_expiry.value,notes:form.notes.value.trim()});form.reset();await load();toast("Company traveller saved.");}catch(err){banner(form,errorMessage(err,"Could not save traveller."),"error");}busy(form,false);});
+    list.addEventListener("click",async function(e){const edit=e.target.closest(".js-edit-traveller"),archive=e.target.closest(".js-archive-traveller"),id=(edit||archive)?.dataset.id,t=travellers.find(function(x){return x.id===id;});if(!t)return;if(edit){form.traveller_id.value=t.id;form.expected_updated_at.value=t.updated_at;form.full_name.value=t.full_name||"";form.date_of_birth.value=t.date_of_birth||"";form.nationality.value=t.nationality||"";form.passport_number.value=t.passport_number||"";form.passport_expiry.value=t.passport_expiry||"";form.notes.value=t.notes||"";form.scrollIntoView({behavior:"smooth"});return;}if(!confirm("Archive this company traveller?"))return;try{await KridiyaAuth.archiveMyCorporateTraveller(activeCompany.corporate_account_id,t.id,t.updated_at);await load();toast("Company traveller archived.");}catch(err){toast(errorMessage(err,"Could not archive traveller."));}});
   }
 
   function renderCorporatePortal(companies, bookings, activeCompany, quotes) {
