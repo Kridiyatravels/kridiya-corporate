@@ -549,6 +549,7 @@ window.KridiyaAuth = (function () {
   async function listMyCorporateFinanceEvidence(corporateAccountId) { const sb=await client(); const r=await sb.rpc("list_my_corporate_finance_evidence",{p_corporate_account_id:corporateAccountId}); if(r.error)throw r.error; return r.data||[]; }
   async function submitMyCorporateFinanceEvidence(payload) { const sb=await client(),user=await currentUser(); if(!user)throw new Error("Please log in again."); const ext=(payload.file.name.split(".").pop()||"file").replace(/[^a-z0-9]/gi,"").toLowerCase(),token=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)),path=user.id+"/"+payload.bookingId+"/"+token+"."+ext; const upload=await sb.storage.from("corporate-finance-evidence").upload(path,payload.file,{upsert:false,contentType:payload.file.type}); if(upload.error)throw upload.error; const r=await sb.rpc("attach_my_corporate_finance_evidence",{p_corporate_account_id:payload.corporateAccountId,p_booking_id:payload.bookingId,p_evidence_type:payload.evidenceType,p_reference:payload.reference||null,p_storage_path:path,p_file_name:payload.file.name,p_mime_type:payload.file.type,p_size_bytes:payload.file.size}); if(r.error){await sb.storage.from("corporate-finance-evidence").remove([path]);throw r.error;} return r.data; }
   async function listMyCorporateBranches(corporateAccountId){const sb=await client();const r=await sb.rpc("list_my_corporate_branches",{p_corporate_account_id:corporateAccountId});if(r.error)throw r.error;return r.data||[];}
+  async function listMyCorporateTravelPolicies(corporateAccountId){const sb=await client();const r=await sb.rpc("list_my_corporate_travel_policies",{p_corporate_account_id:corporateAccountId});if(r.error)throw r.error;return r.data||[];}
 
   function getUser(email) {
     const cached = session();
@@ -623,6 +624,7 @@ window.KridiyaAuth = (function () {
     listMyCorporateFinanceEvidence: listMyCorporateFinanceEvidence,
     submitMyCorporateFinanceEvidence: submitMyCorporateFinanceEvidence,
     listMyCorporateBranches: listMyCorporateBranches,
+    listMyCorporateTravelPolicies: listMyCorporateTravelPolicies,
     passwordIssue: passwordIssue,
     passwordStrength: passwordStrength,
     escapeHTML: escapeHTML,
@@ -1317,6 +1319,7 @@ window.KridiyaAuth = (function () {
         initCorporateTravellers(activeCompany);
         initCorporateFinanceEvidence(activeCompany, bookings);
         initCorporateBranches(activeCompany);
+        initCorporatePolicies(activeCompany);
       } catch (err) {
         gate.hidden = false;
         app.hidden = true;
@@ -1365,6 +1368,7 @@ window.KridiyaAuth = (function () {
     load().catch(function(e){list.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(e,"Could not load finance evidence."))+'</div>';});form.addEventListener("submit",async function(e){e.preventDefault();if(!validateForm(form))return;const file=form.file.files[0];if(!file||file.size>10485760||!["application/pdf","image/jpeg","image/png"].includes(file.type)){banner(form,"Choose a PDF, JPG or PNG no larger than 10 MB.","error");return;}banner(form,"");busy(form,true,"Uploading...");try{await KridiyaAuth.submitMyCorporateFinanceEvidence({corporateAccountId:activeCompany.corporate_account_id,bookingId:form.booking_id.value,evidenceType:form.evidence_type.value,reference:form.reference.value.trim(),file:file});form.reset();await load();toast("Finance evidence submitted for verification.");}catch(err){banner(form,errorMessage(err,"Could not submit evidence."),"error");}busy(form,false);});
   }
   async function initCorporateBranches(activeCompany){const target=document.getElementById("corp-branch-list");if(!target)return;try{const rows=await KridiyaAuth.listMyCorporateBranches(activeCompany.corporate_account_id);target.innerHTML=rows.length?rows.map(function(b){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(b.branch_name)+'</b><p>'+KridiyaAuth.escapeHTML([b.branch_code,b.city,b.country,b.address,b.phone,b.billing_email].filter(Boolean).join(" / "))+'</p></div><span class="status-chip">'+KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(b.status))+'</span></article>';}).join(''):'<div class="portal-empty">No branches have been configured for this company.</div>';}catch(err){target.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(err,"Could not load branches."))+'</div>';}}
+  async function initCorporatePolicies(activeCompany){const target=document.getElementById("corp-policy-list");if(!target)return;try{const rows=await KridiyaAuth.listMyCorporateTravelPolicies(activeCompany.corporate_account_id);target.innerHTML=rows.length?rows.map(function(p){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(p.policy_name)+'</b><p>'+KridiyaAuth.escapeHTML([p.trip_budget_limit!=null?"Trip budget "+p.currency+" "+p.trip_budget_limit:"",p.approval_threshold!=null?"Approval above "+p.currency+" "+p.approval_threshold:"","Book "+p.advance_booking_days+" days ahead","Max cabin "+KridiyaAuth.statusLabel(p.max_cabin),p.max_hotel_stars?"Max hotel "+p.max_hotel_stars+" stars":"",p.requires_lpo?"LPO required":"",p.requires_second_approval?"Two approvals required":""].filter(Boolean).join(" / "))+'</p></div></article>';}).join(''):'<div class="portal-empty">No active travel policy has been published.</div>';}catch(err){target.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(err,"Could not load travel policy."))+'</div>';}}
 
   function renderCorporatePortal(companies, bookings, activeCompany, quotes) {
     const companyList = document.getElementById("corp-company-list");
