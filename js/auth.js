@@ -1390,7 +1390,9 @@ window.KridiyaAuth = (function () {
     async function load() {
       const cases = await KridiyaAuth.listMyCorporateDeskCases(activeCompany.corporate_account_id);
       list.innerHTML = cases.length ? cases.map(function (item) {
-        return '<article class="portal-record-card"><div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.category)) + ' / ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.urgency)) + '</span><b>' + KridiyaAuth.escapeHTML(item.subject) + '</b><p>' + KridiyaAuth.escapeHTML(item.description) + '</p>' + (item.staff_response ? '<p><b>Kridiya response:</b> ' + KridiyaAuth.escapeHTML(item.staff_response) + '</p>' : '') + '</div><span class="status-chip">' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.status)) + '</span></article>';
+        const due = item.response_due_at ? new Date(item.response_due_at).toLocaleString("en-GB") : "Not set";
+        const overdue = !item.first_responded_at && !/resolved|closed/.test(item.status) && item.response_due_at && new Date(item.response_due_at) < new Date();
+        return '<article class="portal-record-card"><div><span>' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.category)) + ' / ' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.urgency)) + '</span><b>' + KridiyaAuth.escapeHTML(item.subject) + '</b><p>' + KridiyaAuth.escapeHTML(item.description) + '</p><p><b>' + KridiyaAuth.escapeHTML(overdue ? "Response escalation active" : "Response target") + ':</b> ' + KridiyaAuth.escapeHTML(due) + '</p>' + (item.staff_response ? '<p><b>Kridiya response:</b> ' + KridiyaAuth.escapeHTML(item.staff_response) + '</p>' : '') + '</div><span class="status-chip">' + KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(item.status)) + '</span></article>';
       }).join('') : '<div class="portal-empty">No tracked Corporate Desk cases yet.</div>';
     }
     load().catch(function (err) { list.innerHTML = '<div class="form-banner error">' + KridiyaAuth.escapeHTML(errorMessage(err,"Could not load Corporate Desk cases.")) + '</div>'; });
