@@ -554,6 +554,27 @@ window.KridiyaAuth = (function () {
     return result.data;
   }
 
+  async function createMyCorporatePolicyRequest(payload) {
+    const user = await currentUser();
+    if (!user) throw new Error("Please log in again.");
+    const sb = await client();
+    const result = await sb.rpc("create_my_corporate_policy_request", {
+      p_corporate_account_id: payload.corporateAccountId,
+      p_title: payload.title,
+      p_service_type: payload.serviceType,
+      p_route_or_destination: payload.route || null,
+      p_travel_start: payload.travelStart || null,
+      p_travel_end: payload.travelEnd || null,
+      p_customer_notes: payload.notes || null,
+      p_requested_budget: payload.requestedBudget == null ? null : payload.requestedBudget,
+      p_requested_cabin: payload.requestedCabin || null,
+      p_requested_hotel_stars: payload.requestedHotelStars == null ? null : payload.requestedHotelStars,
+      p_lpo_ready: !!payload.lpoReady
+    });
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
   async function listMyCorporateDeskCases(corporateAccountId) {
     const sb = await client();
     const result = await sb.rpc("list_my_corporate_desk_cases", { p_corporate_account_id: corporateAccountId, p_limit: 100 });
@@ -642,6 +663,7 @@ window.KridiyaAuth = (function () {
     requestMyCorporateQuoteRevision: requestMyCorporateQuoteRevision,
     getMyCorporateBookingDetail: getMyCorporateBookingDetail,
     createMyCorporateRequest: createMyCorporateRequest,
+    createMyCorporatePolicyRequest: createMyCorporatePolicyRequest,
     listMyCorporateDeskCases: listMyCorporateDeskCases,
     createMyCorporateDeskCase: createMyCorporateDeskCase,
     listMyCorporateTravellers: listMyCorporateTravellers,
@@ -2200,18 +2222,22 @@ window.KridiyaAuth = (function () {
       busy(form, true, "Submitting...");
       try {
         const submittedTitle = form.title.value.trim();
-        await KridiyaAuth.createMyCorporateRequest({
+        const policyResult = await KridiyaAuth.createMyCorporatePolicyRequest({
           corporateAccountId: activeCompany.corporate_account_id,
           serviceType: form.service.value,
           title: submittedTitle,
           route: form.route.value,
           travelStart: form.start.value,
           travelEnd: form.end.value,
-          notes: form.notes.value
+          notes: form.notes.value,
+          requestedBudget: form.budget.value === "" ? null : Number(form.budget.value),
+          requestedCabin: form.cabin.value || null,
+          requestedHotelStars: form.hotel_stars.value === "" ? null : Number(form.hotel_stars.value),
+          lpoReady: form.lpo_ready.value === "true"
         });
         form.reset();
         if (typeof refresh === "function") await refresh();
-        toast("Request submitted. It is now visible in Bookings.");
+        toast(policyResult && policyResult.review_required ? "Request submitted. A policy review task was created for Kridiya." : "Request submitted and checked against the active company policy.");
         if (typeof window.KridiyaOpenCorporateTab === "function") {
           window.KridiyaOpenCorporateTab("bookings");
         } else {

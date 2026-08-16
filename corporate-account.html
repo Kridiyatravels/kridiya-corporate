@@ -226,6 +226,10 @@
                     <div class="field col-6"><label for="corp-portal-route">ROUTE / DESTINATION</label><input id="corp-portal-route" name="route" placeholder="City, airport, hotel, country..."></div>
                     <div class="field col-3"><label for="corp-portal-start">START</label><input id="corp-portal-start" name="start" type="date"></div>
                     <div class="field col-3"><label for="corp-portal-end">END</label><input id="corp-portal-end" name="end" type="date"></div>
+                    <div class="field col-3"><label for="corp-portal-budget">TRIP BUDGET (AED)</label><input id="corp-portal-budget" name="budget" type="number" min="0" step="0.01" placeholder="Optional"></div>
+                    <div class="field col-3"><label for="corp-portal-cabin">CABIN</label><select id="corp-portal-cabin" name="cabin"><option value="">Not applicable</option><option value="economy">Economy</option><option value="premium_economy">Premium economy</option><option value="business">Business</option><option value="first">First</option></select></div>
+                    <div class="field col-3"><label for="corp-portal-stars">HOTEL STARS</label><select id="corp-portal-stars" name="hotel_stars"><option value="">Not applicable</option><option value="3">3 stars</option><option value="4">4 stars</option><option value="5">5 stars</option></select></div>
+                    <div class="field col-3"><label for="corp-portal-lpo">LPO READY</label><select id="corp-portal-lpo" name="lpo_ready"><option value="false">No / not yet</option><option value="true">Yes</option></select></div>
                     <div class="field"><label for="corp-portal-notes">NOTES</label><textarea id="corp-portal-notes" name="notes" placeholder="Travellers, deadline, approver, LPO/payment details, urgency..."></textarea></div>
                   </div>
                   <div id="corp-request-guide" class="portal-request-guide" aria-live="polite">
@@ -420,6 +424,6 @@
   </section>
 </main>
 <script src="js/corporate.js?v=20260731d" defer></script>
-  <script src="js/auth.js?v=20260816f" defer></script>
+  <script src="js/auth.js?v=20260816g" defer></script>
 </body>
 </html>
