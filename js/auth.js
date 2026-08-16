@@ -486,7 +486,20 @@ window.KridiyaAuth = (function () {
       p_limit: 100
     });
     if (result.error) throw result.error;
-    return result.data || [];
+    const quotes = result.data || [];
+    const enriched = await Promise.all(quotes.map(async function (quote) {
+      if (String(quote.status || "") !== "sent") return quote;
+      const approvals = await sb.rpc("list_my_corporate_quote_approvals", { p_quote_id: quote.id });
+      if (approvals.error) return quote;
+      const records = approvals.data || [];
+      const mine = records.find(function (record) { return record.approver_user_id === user.id; });
+      return Object.assign({}, quote, {
+        approval_count: records.filter(function (record) { return record.decision === "approved"; }).length,
+        required_approvals: records.length ? Number(records[0].required_approvals || 1) : null,
+        my_approval_decision: mine ? mine.decision : null
+      });
+    }));
+    return enriched;
   }
 
   async function respondMyCorporateQuote(quoteId, status) {
@@ -1770,7 +1783,8 @@ window.KridiyaAuth = (function () {
       '<small>' + KridiyaAuth.escapeHTML(activeCompany.can_approve_quotes ? "This login can approve quotes." : "This login can view quotes only.") + '</small>' +
     '</div>' + quotes.map(function (quote) {
       const status = String(quote.status || "sent");
-      const canAct = !!activeCompany.can_approve_quotes && status === "sent";
+      const alreadyActed = !!quote.my_approval_decision;
+      const canAct = !!activeCompany.can_approve_quotes && status === "sent" && !alreadyActed;
       const validUntil = quote.valid_until
         ? new Date(quote.valid_until).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
         : "No expiry set";
@@ -1781,12 +1795,16 @@ window.KridiyaAuth = (function () {
       const bookingTitle = quote.booking_title || "Corporate booking";
       const service = KridiyaAuth.statusLabel(quote.service_type || "corporate");
       const statusTone = status === "accepted" ? "is-accepted" : status === "declined" ? "is-declined" : "is-sent";
-      const approvalLabel = status === "accepted" ? "Accepted" : status === "declined" ? "Declined" : canAct ? "Action needed" : "View only";
+      const approvalLabel = status === "accepted" ? "Accepted" : status === "declined" ? "Declined" : alreadyActed
+        ? "Approval " + String(quote.approval_count || 1) + " of " + String(quote.required_approvals || 2)
+        : canAct ? "Action needed" : "View only";
       const responseNote = status === "accepted"
         ? "Quote accepted. Kridiya will continue with payment/LPO control and supplier confirmation."
         : status === "declined"
           ? "Quote declined. Kridiya has been notified and can prepare another option if required."
-          : "This login can view quotes only. Contact Kridiya corporate desk if approval access is required.";
+          : alreadyActed
+            ? "Your decision is recorded. A different authorized approver must complete this quote."
+            : "This login can view quotes only. Contact Kridiya corporate desk if approval access is required.";
       return '<article class="portal-quote-card ' + statusTone + '" data-quote-id="' + KridiyaAuth.escapeHTML(quote.id) + '">' +
         '<div class="quote-packet-top">' +
           '<div><small>' + KridiyaAuth.escapeHTML(quote.booking_reference || "Corporate quote") + '</small><h3>' + KridiyaAuth.escapeHTML(quote.title || bookingTitle || "Travel option") + '</h3></div>' +
@@ -1812,8 +1830,13 @@ window.KridiyaAuth = (function () {
         const buttons = Array.from(card.querySelectorAll("button"));
         buttons.forEach(function (btn) { btn.disabled = true; });
         try {
-          await KridiyaAuth.respondMyCorporateQuote(card.dataset.quoteId, status);
-          toast(status === "accepted" ? "Quote accepted. Kridiya admin has been updated." : "Quote declined. Kridiya admin has been updated.");
+          const decision = await KridiyaAuth.respondMyCorporateQuote(card.dataset.quoteId, status);
+          if (status === "accepted" && !decision.finalized) {
+            card.querySelector(".portal-quote-actions").innerHTML = '<div class="quote-view-note">Approval '+KridiyaAuth.escapeHTML(decision.approval_count)+' of '+KridiyaAuth.escapeHTML(decision.required_approvals)+' recorded. A different authorized approver must complete this quote.</div>';
+            toast("Your approval was recorded. Another authorized approver is required.");
+            return;
+          }
+          toast(status === "accepted" ? "Required approvals complete. Quote accepted." : "Quote declined. Kridiya admin has been updated.");
           const fresh = await Promise.all([
             KridiyaAuth.listMyCorporateBookings(activeCompany.corporate_account_id),
             KridiyaAuth.listMyCorporateQuotes(activeCompany.corporate_account_id)
