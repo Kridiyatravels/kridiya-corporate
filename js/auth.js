@@ -597,6 +597,7 @@ window.KridiyaAuth = (function () {
   async function submitMyCorporateFinanceEvidence(payload) { const sb=await client(),user=await currentUser(); if(!user)throw new Error("Please log in again."); const ext=(payload.file.name.split(".").pop()||"file").replace(/[^a-z0-9]/gi,"").toLowerCase(),token=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)),path=user.id+"/"+payload.bookingId+"/"+token+"."+ext; const upload=await sb.storage.from("corporate-finance-evidence").upload(path,payload.file,{upsert:false,contentType:payload.file.type}); if(upload.error)throw upload.error; const r=await sb.rpc("attach_my_corporate_finance_evidence",{p_corporate_account_id:payload.corporateAccountId,p_booking_id:payload.bookingId,p_evidence_type:payload.evidenceType,p_reference:payload.reference||null,p_storage_path:path,p_file_name:payload.file.name,p_mime_type:payload.file.type,p_size_bytes:payload.file.size}); if(r.error){await sb.storage.from("corporate-finance-evidence").remove([path]);throw r.error;} return r.data; }
   async function listMyCorporateBranches(corporateAccountId){const sb=await client();const r=await sb.rpc("list_my_corporate_branches",{p_corporate_account_id:corporateAccountId});if(r.error)throw r.error;return r.data||[];}
   async function listMyCorporateTravelPolicies(corporateAccountId){const sb=await client();const r=await sb.rpc("list_my_corporate_travel_policies",{p_corporate_account_id:corporateAccountId});if(r.error)throw r.error;return r.data||[];}
+  async function listMyCorporateTravelDisruptions(corporateAccountId){const sb=await client();const r=await sb.rpc("list_my_corporate_travel_disruptions",{p_corporate_account_id:corporateAccountId,p_limit:100});if(r.error)throw r.error;return r.data||[];}
 
   function getUser(email) {
     const cached = session();
@@ -675,6 +676,7 @@ window.KridiyaAuth = (function () {
     submitMyCorporateFinanceEvidence: submitMyCorporateFinanceEvidence,
     listMyCorporateBranches: listMyCorporateBranches,
     listMyCorporateTravelPolicies: listMyCorporateTravelPolicies,
+    listMyCorporateTravelDisruptions: listMyCorporateTravelDisruptions,
     passwordIssue: passwordIssue,
     passwordStrength: passwordStrength,
     escapeHTML: escapeHTML,
@@ -1370,6 +1372,7 @@ window.KridiyaAuth = (function () {
         initCorporateFinanceEvidence(activeCompany, bookings);
         initCorporateBranches(activeCompany);
         initCorporatePolicies(activeCompany);
+        initCorporateDisruptions(activeCompany);
       } catch (err) {
         gate.hidden = false;
         app.hidden = true;
@@ -1425,6 +1428,7 @@ window.KridiyaAuth = (function () {
   }
   async function initCorporateBranches(activeCompany){const target=document.getElementById("corp-branch-list");if(!target)return;try{const rows=await KridiyaAuth.listMyCorporateBranches(activeCompany.corporate_account_id);target.innerHTML=rows.length?rows.map(function(b){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(b.branch_name)+'</b><p>'+KridiyaAuth.escapeHTML([b.branch_code,b.city,b.country,b.address,b.phone,b.billing_email].filter(Boolean).join(" / "))+'</p></div><span class="status-chip">'+KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(b.status))+'</span></article>';}).join(''):'<div class="portal-empty">No branches have been configured for this company.</div>';}catch(err){target.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(err,"Could not load branches."))+'</div>';}}
   async function initCorporatePolicies(activeCompany){const target=document.getElementById("corp-policy-list");if(!target)return;try{const rows=await KridiyaAuth.listMyCorporateTravelPolicies(activeCompany.corporate_account_id);target.innerHTML=rows.length?rows.map(function(p){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(p.policy_name)+'</b><p>'+KridiyaAuth.escapeHTML([p.trip_budget_limit!=null?"Trip budget "+p.currency+" "+p.trip_budget_limit:"",p.approval_threshold!=null?"Approval above "+p.currency+" "+p.approval_threshold:"","Book "+p.advance_booking_days+" days ahead","Max cabin "+KridiyaAuth.statusLabel(p.max_cabin),p.max_hotel_stars?"Max hotel "+p.max_hotel_stars+" stars":"",p.requires_lpo?"LPO required":"",p.requires_second_approval?"Two approvals required":""].filter(Boolean).join(" / "))+'</p></div></article>';}).join(''):'<div class="portal-empty">No active travel policy has been published.</div>';}catch(err){target.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(err,"Could not load travel policy."))+'</div>';}}
+  async function initCorporateDisruptions(activeCompany){const target=document.getElementById("corp-disruption-list");if(!target)return;try{const rows=await KridiyaAuth.listMyCorporateTravelDisruptions(activeCompany.corporate_account_id);target.innerHTML=rows.length?rows.map(function(d){return '<article class="portal-record-card"><div><b>'+KridiyaAuth.escapeHTML(d.title)+' — '+KridiyaAuth.escapeHTML(d.booking_reference)+'</b><p>'+KridiyaAuth.escapeHTML([KridiyaAuth.statusLabel(d.severity),KridiyaAuth.statusLabel(d.status),d.next_update_at?"Next update "+new Date(d.next_update_at).toLocaleString("en-GB"):""].filter(Boolean).join(" / "))+'</p>'+(d.updates||[]).map(function(u){return '<p>'+KridiyaAuth.escapeHTML(u.message)+'</p>';}).join('')+'</div><span class="status-chip">'+KridiyaAuth.escapeHTML(KridiyaAuth.statusLabel(d.impact_status))+'</span></article>';}).join(''):'<div class="portal-empty">No active disruption affects this company’s bookings.</div>';}catch(err){target.innerHTML='<div class="form-banner error">'+KridiyaAuth.escapeHTML(errorMessage(err,"Could not load disruption updates."))+'</div>';}}
 
   function renderCorporatePortal(companies, bookings, activeCompany, quotes) {
     const companyList = document.getElementById("corp-company-list");
